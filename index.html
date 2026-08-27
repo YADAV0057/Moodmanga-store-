@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MoodManga Store — Prints & Finds for the Manga-Obsessed</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="brand">
+    <span class="seal">MM</span> MoodManga Store
+  </a>
+  <div class="header-actions">
+    <button class="cart-btn" id="cartToggle">
+      CART <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Panel 01 / New Arrivals</div>
+  <h1>Art for your walls.<br>Gear for your world.</h1>
+  <p>Museum-grade manga prints picked by mood, plus everyday finds — all in one shop. Free shipping over ₹999.</p>
+</section>
+
+<div class="torn-divider"></div>
+
+<main>
+  <div class="panel-grid" id="productGrid">
+    <div class="empty-state">Loading products…</div>
+  </div>
+</main>
+
+<footer>
+  MOODMANGA STORE — JAIPUR, INDIA · SUPPORT@MOODMANGA.IN
+</footer>
+
+<!-- Product detail modal -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <button class="modal-close" id="closeModal">×</button>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Cart drawer -->
+<div class="overlay-backdrop" id="backdrop"></div>
+<aside class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>Your Cart</h3>
+    <button class="modal-close" id="closeCart" style="position:static;">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Total</span><span id="cartTotal">₹0</span></div>
+    <button class="btn btn-primary" id="checkoutBtn" style="width:100%;">GO TO CHECKOUT</button>
+  </div>
+</aside>
+
+<!-- Checkout modal -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal">
+    <button class="modal-close" id="closeCheckout">×</button>
+    <div class="modal-body">
+      <h2>Checkout</h2>
+      <form class="checkout-form" id="checkoutForm">
+        <label>Full name</label>
+        <input type="text" name="name" required />
+        <label>Email</label>
+        <input type="email" name="email" required />
+        <label>Phone</label>
+        <input type="tel" name="phone" required />
+        <label>Address line</label>
+        <input type="text" name="line1" required />
+        <label>City</label>
+        <input type="text" name="city" required />
+        <label>State</label>
+        <input type="text" name="state" required />
+        <label>Pincode</label>
+        <input type="text" name="pincode" required />
+        <div class="cart-total"><span>Total</span><span id="checkoutTotal">₹0</span></div>
+        <button type="submit" class="btn btn-dark" id="payBtn">PAY WITH RAZORPAY</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/checkout.js"></script>
+</body>
+</html>
