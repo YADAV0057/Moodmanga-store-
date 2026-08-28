@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products — MoodManga Store Admin</title>
+<link rel="stylesheet" href="css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="admin-topbar">
+  <a href="dashboard.html" class="admin-logo">MoodManga Store Admin</a>
+  <nav class="admin-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="products.html" class="active">Products</a>
+    <a href="orders.html">Orders</a>
+    <button id="logoutBtn" class="admin-nav-logout">Sign out</button>
+  </nav>
+</header>
+
+<main class="admin-main">
+  <div class="admin-page-header">
+    <h1>Products</h1>
+    <button id="openAddModal" class="btn btn-primary">+ Add product</button>
+  </div>
+
+  <div class="admin-toolbar">
+    <input type="search" id="searchInput" placeholder="Search by name or slug…">
+    <select id="categoryFilter"><option value="">All categories</option></select>
+    <select id="statusFilter">
+      <option value="">All statuses</option>
+      <option value="active">Active only</option>
+      <option value="inactive">Inactive only</option>
+    </select>
+  </div>
+
+  <div id="loadingState" class="admin-state">Loading products…</div>
+  <div id="errorState" class="admin-state admin-state-error" hidden></div>
+  <div id="emptyState" class="admin-state" hidden>No products found.</div>
+
+  <table id="productsTable" class="admin-table" hidden>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Active</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="productsTbody"></tbody>
+  </table>
+</main>
+
+<!-- Add / Edit modal -->
+<div id="productModal" class="admin-modal-backdrop" hidden>
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h2 id="modalTitle">Add product</h2>
+      <button id="closeModal" class="admin-modal-close">&times;</button>
+    </div>
+    <form id="productForm">
+      <input type="hidden" id="productId">
+      <label>Name *<input type="text" id="fieldName" required></label>
+      <label>Slug *<input type="text" id="fieldSlug" required placeholder="unique-url-slug"></label>
+      <label>Description<textarea id="fieldDescription" rows="3"></textarea></label>
+      <div class="admin-form-row">
+        <label>Price (INR) *<input type="number" id="fieldPrice" min="0" step="0.01" required></label>
+        <label>Compare-at price (INR)<input type="number" id="fieldCompareAt" min="0" step="0.01"></label>
+      </div>
+      <div class="admin-form-row">
+        <label>Category *<input type="text" id="fieldCategory" required value="general"></label>
+        <label>Mood tag<input type="text" id="fieldMoodTag"></label>
+      </div>
+      <label>Image URL<input type="url" id="fieldImageUrl" placeholder="https://…"></label>
+      <label>Gallery URLs (one per line)<textarea id="fieldGallery" rows="2"></textarea></label>
+      <div class="admin-form-row">
+        <label>Stock quantity *<input type="number" id="fieldStock" min="0" step="1" required></label>
+        <label class="admin-checkbox-label"><input type="checkbox" id="fieldActive" checked> Active (visible in store)</label>
+      </div>
+      <div id="formError" class="admin-form-error" hidden></div>
+      <div class="admin-modal-actions">
+        <button type="button" id="cancelForm" class="btn btn-secondary">Cancel</button>
+        <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div id="deleteModal" class="admin-modal-backdrop" hidden>
+  <div class="admin-modal admin-modal-small">
+    <h2>Delete product?</h2>
+    <p id="deleteProductName"></p>
+    <p class="admin-modal-warning">This can't be undone.</p>
+    <div class="admin-modal-actions">
+      <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+      <button id="confirmDelete" class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/admin-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/products.js"></script>
+</body>
+</html>
+
