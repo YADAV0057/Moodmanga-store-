@@ -1,3 +1,5 @@
+FILE: admin/css/admin.css
+================================================
 /* MoodManga Admin — reuses the storefront's design tokens for consistency */
 
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
@@ -166,8 +168,8 @@ body {
 .btn-danger-outline { background: #fff; color: #b00020; border: 1px solid #b00020; }
 .btn-small { padding: 5px 10px; font-size: 12px; }
 
-.admin-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 100; }
-.admin-modal-backdrop.active { display: flex; }
+.admin-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.admin-modal-backdrop[hidden] { display: none; }
 .admin-modal-small { max-width: 360px; }
 .admin-modal-header { display: flex; justify-content: space-between; align-items: center; }
 .admin-modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
@@ -236,3 +238,8 @@ body {
 .admin-stock-low { color: #92400e; font-weight: 600; }
 
 
+
+
+
+================================================
+FILE: admin/js/admin-config.js
