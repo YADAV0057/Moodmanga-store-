@@ -39,11 +39,11 @@ async function init() {
   });
 
   els.openAddModal.addEventListener('click', () => openModal());
-  els.closeModal.addEventListener('click', closeModal);
-  els.cancelForm.addEventListener('click', closeModal);
+  els.closeModal.addEventListener('click', requestCloseModal);
+  els.cancelForm.addEventListener('click', requestCloseModal);
   els.form.addEventListener('submit', handleSave);
 
-  els.cancelDelete.addEventListener('click', closeDeleteModal);
+  els.cancelDelete.addEventListener('click', requestCloseModal);
   els.confirmDelete.addEventListener('click', handleConfirmDelete);
 
   els.search.addEventListener('input', renderTable);
@@ -191,6 +191,7 @@ function openModal(product = null) {
   document.getElementById('fieldStock').value = product?.stock_qty ?? 0;
   document.getElementById('fieldActive').checked = product ? product.is_active : true;
   show(els.modal);
+  openModalWithBackSupport(closeModal);
 }
 
 function closeModal() {
@@ -239,7 +240,7 @@ async function handleSave(e) {
     return;
   }
 
-  closeModal();
+  requestCloseModal();
   await loadProducts();
 }
 
@@ -247,6 +248,7 @@ function openDeleteModal(product) {
   pendingDeleteId = product.id;
   els.deleteProductName.textContent = product.name;
   show(els.deleteModal);
+  openModalWithBackSupport(closeDeleteModal);
 }
 
 function closeDeleteModal() {
@@ -263,7 +265,7 @@ async function handleConfirmDelete() {
     alert('Delete failed: ' + error.message);
     return;
   }
-  closeDeleteModal();
+  requestCloseModal();
   await loadProducts();
 }
 
@@ -274,4 +276,3 @@ function escapeHtml(str) {
   div.textContent = str ?? '';
   return div.innerHTML;
 }
-

@@ -41,7 +41,7 @@ async function init() {
     window.location.href = 'login.html';
   });
 
-  els.closeModal.addEventListener('click', closeModal);
+  els.closeModal.addEventListener('click', requestCloseModal);
   els.saveOrderBtn.addEventListener('click', handleSaveOrder);
   els.search.addEventListener('input', renderTable);
   els.statusFilter.addEventListener('change', renderTable);
@@ -154,6 +154,7 @@ async function openOrderDetail(orderId) {
   els.detailNotes.value = order.admin_notes || '';
 
   show(els.modal);
+  openModalWithBackSupport(closeModal);
 }
 
 function closeModal() {
@@ -196,7 +197,7 @@ async function handleSaveOrder() {
   const idx = allOrders.findIndex(o => o.id === currentOrderId);
   if (idx !== -1) allOrders[idx] = { ...allOrders[idx], ...patch };
 
-  closeModal();
+  requestCloseModal();
   renderTable();
 }
 
