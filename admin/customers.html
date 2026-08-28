@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customers — MoodManga Store Admin</title>
+<link rel="stylesheet" href="css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="admin-topbar">
+  <a href="dashboard.html" class="admin-logo">MoodManga Store Admin</a>
+  <nav class="admin-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="products.html">Products</a>
+    <a href="orders.html">Orders</a>
+    <a href="settings.html">Settings</a>
+    <a href="customers.html" class="active">Customers</a>
+    <button id="logoutBtn" class="admin-nav-logout" onclick="handleLogout()">Sign out</button>
+  </nav>
+</header>
+
+<main class="admin-main">
+  <div class="admin-page-header">
+    <h1>Customers</h1>
+  </div>
+
+  <div class="admin-toolbar">
+    <input type="search" id="searchInput" placeholder="Search by name or email…">
+  </div>
+
+  <div id="loadingState" class="admin-state">Loading customers…</div>
+  <div id="errorState" class="admin-state admin-state-error" hidden></div>
+  <div id="emptyState" class="admin-state" hidden>No customers yet.</div>
+
+  <table id="customersTable" class="admin-table" hidden>
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Phone</th>
+        <th>Orders</th>
+        <th>Total spent</th>
+        <th>Last order</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="customersTbody"></tbody>
+  </table>
+</main>
+
+<!-- Customer detail modal (read-only) -->
+<div id="customerModal" class="admin-modal-backdrop" hidden>
+  <div class="admin-modal admin-modal-large">
+    <div class="admin-modal-header">
+      <h2 id="detailName">Customer</h2>
+      <button id="closeModal" class="admin-modal-close" onclick="requestCloseModal()">&times;</button>
+    </div>
+
+    <section class="admin-order-section">
+      <p id="detailContact"></p>
+      <p id="detailAddress"></p>
+    </section>
+
+    <section class="admin-order-section">
+      <h3>Order history</h3>
+      <table class="admin-table admin-table-compact">
+        <thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody id="detailOrdersTbody"></tbody>
+      </table>
+    </section>
+  </div>
+</div>
+
+<script src="js/admin-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/customers.js"></script>
+</body>
+</html>
