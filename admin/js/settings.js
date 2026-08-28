@@ -33,6 +33,7 @@ const els = {
   settingsError: document.getElementById('settingsError'),
   settingsSaved: document.getElementById('settingsSaved'),
   fieldShippingThreshold: document.getElementById('fieldShippingThreshold'),
+  fieldStandardShipping: document.getElementById('fieldStandardShipping'),
   saveSettingsBtn: document.getElementById('saveSettingsBtn'),
 
   modal: document.getElementById('couponModal'),
@@ -64,14 +65,16 @@ function handleLogout() {
   supabaseClient.auth.signOut().then(() => { window.location.href = 'login.html'; });
 }
 
-// ── Shipping threshold ──────────────────────────────────
+// ── Shipping settings ────────────────────────────────────
+// store_settings is a singleton row (id = true) already created by the
+// checkout build — do not change its shape here, just read/update it.
 
 async function loadSettings() {
   els.settingsError.hidden = true;
   const { data, error } = await supabaseClient
     .from('store_settings')
     .select('*')
-    .eq('key', 'free_shipping_threshold_inr')
+    .eq('id', true)
     .maybeSingle();
 
   if (error) {
@@ -80,16 +83,18 @@ async function loadSettings() {
     return;
   }
 
-  els.fieldShippingThreshold.value = data ? data.value : '';
+  els.fieldShippingThreshold.value = data ? data.free_shipping_threshold_inr : '';
+  els.fieldStandardShipping.value = data ? data.standard_shipping_inr : '';
 }
 
 async function handleSaveSettings() {
   els.settingsError.hidden = true;
   els.settingsSaved.hidden = true;
-  const value = els.fieldShippingThreshold.value.trim();
+  const threshold = els.fieldShippingThreshold.value.trim();
+  const standard = els.fieldStandardShipping.value.trim();
 
-  if (value === '' || Number(value) < 0) {
-    els.settingsError.textContent = 'Enter a valid non-negative amount.';
+  if (threshold === '' || Number(threshold) < 0 || standard === '' || Number(standard) < 0) {
+    els.settingsError.textContent = 'Enter valid non-negative amounts.';
     els.settingsError.hidden = false;
     return;
   }
@@ -99,7 +104,12 @@ async function handleSaveSettings() {
 
   const { error } = await supabaseClient
     .from('store_settings')
-    .upsert({ key: 'free_shipping_threshold_inr', value: String(Number(value)), updated_at: new Date().toISOString() });
+    .update({
+      free_shipping_threshold_inr: Number(threshold),
+      standard_shipping_inr: Number(standard),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', true);
 
   els.saveSettingsBtn.disabled = false;
   els.saveSettingsBtn.textContent = 'Save';
