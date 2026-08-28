@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders — MoodManga Store Admin</title>
+<link rel="stylesheet" href="css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="admin-topbar">
+  <a href="dashboard.html" class="admin-logo">MoodManga Store Admin</a>
+  <nav class="admin-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="products.html">Products</a>
+    <a href="orders.html" class="active">Orders</a>
+    <button id="logoutBtn" class="admin-nav-logout">Sign out</button>
+  </nav>
+</header>
+
+<main class="admin-main">
+  <div class="admin-page-header">
+    <h1>Orders</h1>
+  </div>
+
+  <div class="admin-toolbar">
+    <input type="search" id="searchInput" placeholder="Search by customer, email, or order ID…">
+    <select id="statusFilter">
+      <option value="">All statuses</option>
+      <option value="created">Created</option>
+      <option value="paid">Paid</option>
+      <option value="processing">Processing</option>
+      <option value="shipped">Shipped</option>
+      <option value="delivered">Delivered</option>
+      <option value="cancelled">Cancelled</option>
+      <option value="refunded">Refunded</option>
+    </select>
+  </div>
+
+  <div id="loadingState" class="admin-state">Loading orders…</div>
+  <div id="errorState" class="admin-state admin-state-error" hidden></div>
+  <div id="emptyState" class="admin-state" hidden>No orders found.</div>
+
+  <table id="ordersTable" class="admin-table" hidden>
+    <thead>
+      <tr>
+        <th>Order</th>
+        <th>Customer</th>
+        <th>Date</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="ordersTbody"></tbody>
+  </table>
+</main>
+
+<!-- Order detail modal -->
+<div id="orderModal" class="admin-modal-backdrop" hidden>
+  <div class="admin-modal admin-modal-large">
+    <div class="admin-modal-header">
+      <h2>Order details</h2>
+      <button id="closeModal" class="admin-modal-close">&times;</button>
+    </div>
+
+    <div id="orderDetailBody">
+      <section class="admin-order-section">
+        <h3>Customer</h3>
+        <p id="detailCustomer"></p>
+        <p id="detailContact"></p>
+        <p id="detailAddress"></p>
+      </section>
+
+      <section class="admin-order-section">
+        <h3>Items</h3>
+        <table class="admin-table admin-table-compact">
+          <thead><tr><th>Product</th><th>Qty</th><th>Unit price</th><th>Line total</th></tr></thead>
+          <tbody id="detailItemsTbody"></tbody>
+        </table>
+      </section>
+
+      <section class="admin-order-section admin-order-totals">
+        <div><span>Subtotal</span><span id="detailSubtotal"></span></div>
+        <div><span>Shipping</span><span id="detailShipping"></span></div>
+        <div class="admin-order-total-row"><span>Total</span><span id="detailTotal"></span></div>
+      </section>
+
+      <section class="admin-order-section">
+        <h3>Payment</h3>
+        <p id="detailPayment"></p>
+      </section>
+
+      <section class="admin-order-section">
+        <h3>Fulfillment</h3>
+        <label>Status
+          <select id="detailStatus">
+            <option value="created">Created</option>
+            <option value="paid">Paid</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="refunded">Refunded</option>
+          </select>
+        </label>
+        <div class="admin-form-row">
+          <label>Tracking carrier<input type="text" id="detailCarrier" placeholder="e.g. Delhivery"></label>
+          <label>Tracking number<input type="text" id="detailTracking"></label>
+        </div>
+        <label>Admin notes (internal only)<textarea id="detailNotes" rows="2"></textarea></label>
+        <div id="detailError" class="admin-form-error" hidden></div>
+        <div class="admin-modal-actions">
+          <button id="saveOrderBtn" class="btn btn-primary">Save changes</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="js/admin-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/orders.js"></script>
+</body>
+</html>
+
