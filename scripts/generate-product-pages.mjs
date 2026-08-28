@@ -29,6 +29,31 @@ function escapeHtml(str = '') {
     .replace(/'/g, '&#39;');
 }
 
+// Turns a "Label: value" line-based description into tidy <dl> markup.
+// Falls back to plain paragraphs (with <br> for newlines) if the text
+// doesn't look like a field list.
+function formatDescription(description = '') {
+  const lines = description
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  const fieldLine = /^([A-Za-z][A-Za-z /-]{1,30}):\s*(.+)$/;
+  const isFieldList = lines.length > 0 && lines.every((l) => fieldLine.test(l));
+
+  if (isFieldList) {
+    const rows = lines
+      .map((l) => {
+        const m = l.match(fieldLine);
+        return `<div class="spec-row"><dt>${escapeHtml(m[1])}</dt><dd>${escapeHtml(m[2])}</dd></div>`;
+      })
+      .join('\n');
+    return `<dl class="spec-list">${rows}</dl>`;
+  }
+
+  return `<p>${escapeHtml(description).replace(/\n/g, '<br>')}</p>`;
+}
+
 function buildPage(product) {
   const {
     slug,
@@ -49,7 +74,8 @@ function buildPage(product) {
   const keywords = Array.isArray(seo_keywords) ? seo_keywords.join(', ') : '';
   const images = [image_url, ...(gallery_urls || [])].filter(Boolean);
   const canonicalUrl = `${SITE_URL}/product/${slug}.html`;
-  const availability = stock_qty > 0
+  const inStock = stock_qty > 0;
+  const availability = inStock
     ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock';
 
@@ -69,6 +95,13 @@ function buildPage(product) {
       availability,
     },
   };
+
+  const thumbs = images
+    .map(
+      (src, i) =>
+        `<img src="${escapeHtml(src)}" alt="${escapeHtml(name)} view ${i + 1}" class="thumb${i === 0 ? ' active' : ''}" data-full="${escapeHtml(src)}">`
+    )
+    .join('\n');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -91,9 +124,125 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 
 <!-- This page is a crawlable, shareable landing page for the product.
-     It reuses the same storefront CSS and simply opens the existing
-     product modal (main.js) on load, via the ?product= query param,
-     so add-to-cart / quick-view logic stays in one place. -->
+     It reuses the site's fonts/colors via CSS variables where possible,
+     with a self-contained layout so it looks right even before/without
+     custom classes in css/style.css. It also opens the existing product
+     modal (main.js) on load via the ?product= query param, so
+     add-to-cart / quick-view logic stays in one place. -->
+<style>
+  :root {
+    --pp-bg: #faf3e8;
+    --pp-ink: #2b2320;
+    --pp-accent: #7a1f1f;
+    --pp-accent-hover: #5c1717;
+    --pp-muted: #7a7168;
+    --pp-border: #e4d8c4;
+  }
+  .pp-wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 48px;
+    background: var(--pp-bg);
+    color: var(--pp-ink);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .pp-gallery {
+    position: relative;
+  }
+  .pp-gallery img.main {
+    width: 100%;
+    display: block;
+  }
+  .pp-thumbs {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    overflow-x: auto;
+  }
+  .pp-thumbs .thumb {
+    width: 60px;
+    height: 76px;
+    object-fit: cover;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.75;
+  }
+  .pp-thumbs .thumb.active {
+    border-color: var(--pp-accent);
+    opacity: 1;
+  }
+  .pp-body {
+    padding: 16px 20px 0;
+  }
+  .pp-body h1 {
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.7rem;
+    line-height: 1.25;
+    margin: 4px 0 10px;
+  }
+  .pp-price {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .pp-price s {
+    color: var(--pp-muted);
+    font-weight: 400;
+    margin-left: 8px;
+  }
+  .pp-stock {
+    font-size: 0.85rem;
+    margin: 0 0 18px;
+    color: ${inStock ? '#2f6b2f' : '#9c3d3d'};
+  }
+  .spec-list {
+    margin: 0 0 20px;
+    border-top: 1px solid var(--pp-border);
+  }
+  .spec-row {
+    display: flex;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--pp-border);
+    font-size: 0.95rem;
+  }
+  .spec-row dt {
+    flex: 0 0 42%;
+    color: var(--pp-muted);
+    font-weight: 600;
+  }
+  .spec-row dd {
+    margin: 0;
+    flex: 1;
+  }
+  .pp-cta {
+    display: block;
+    text-align: center;
+    background: var(--pp-accent);
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 15px 20px;
+    border-radius: 3px;
+    margin: 10px 0 6px;
+  }
+  .pp-cta:hover {
+    background: var(--pp-accent-hover);
+  }
+  .pp-back {
+    display: inline-block;
+    margin: 18px 0 0;
+    font-size: 0.85rem;
+    color: var(--pp-muted);
+    text-decoration: underline;
+  }
+</style>
 </head>
 <body data-product-slug="${escapeHtml(slug)}">
 
@@ -101,27 +250,45 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
   <a href="../index.html" class="logo">MoodManga Store</a>
 </header>
 
-<main class="product-page">
-  <h1>${escapeHtml(name)}</h1>
-  ${images[0] ? `<img src="${escapeHtml(images[0])}" alt="${escapeHtml(name)}" width="600">` : ''}
-  <p class="price">₹${price_inr}${compare_at_price_inr ? ` <s>₹${compare_at_price_inr}</s>` : ''}</p>
-  <div class="description">${escapeHtml(description || '').replace(/\n/g, '<br>')}</div>
-  <p><a href="../index.html?product=${encodeURIComponent(slug)}" class="btn-primary">View in store / Add to cart</a></p>
+<main class="pp-wrap product-page">
+  <div class="pp-gallery">
+    ${images[0] ? `<img class="main" id="pp-main-image" src="${escapeHtml(images[0])}" alt="${escapeHtml(name)}">` : ''}
+  </div>
+  ${images.length > 1 ? `<div class="pp-thumbs">${thumbs}</div>` : ''}
+
+  <div class="pp-body">
+    <h1>${escapeHtml(name)}</h1>
+    <p class="pp-price">₹${price_inr}${compare_at_price_inr ? ` <s>₹${compare_at_price_inr}</s>` : ''}</p>
+    <p class="pp-stock">${inStock ? 'In stock' : 'Out of stock'}</p>
+
+    ${formatDescription(description)}
+
+    <a href="../index.html?product=${encodeURIComponent(slug)}" class="pp-cta">View in store / Add to cart</a>
+    <a href="../index.html" class="pp-back">&larr; Back to all products</a>
+  </div>
 </main>
 
 <script src="../js/config.js"></script>
 <script src="../js/main.js"></script>
 <script>
-  // main.js exposes window.productsReady (the loadProducts() promise) and
-  // openProductModal() now accepts a slug as well as a DB id. We wait for
-  // productsReady so this doesn't fire before PRODUCTS is populated —
-  // crawlers never run this script, they only see the static HTML above,
-  // which already has the full title/description/JSON-LD.
+  // Simple thumbnail swap (works even if main.js hasn't loaded yet).
   document.addEventListener('DOMContentLoaded', function () {
-    if (window.productsReady && typeof window.openProductModal === 'function') {
-      window.productsReady.then(function () {
-        window.openProductModal('${slug}');
+    var mainImg = document.getElementById('pp-main-image');
+    document.querySelectorAll('.pp-thumbs .thumb').forEach(function (t) {
+      t.addEventListener('click', function () {
+        if (mainImg) mainImg.src = t.dataset.full;
+        document.querySelectorAll('.pp-thumbs .thumb').forEach(function (o) {
+          o.classList.remove('active');
+        });
+        t.classList.add('active');
       });
+    });
+
+    // If main.js exposes openProductModal(slug), auto-open it for visitors
+    // who land here directly, without breaking crawlers (they only see the
+    // static HTML above, which already has full title/description/JSON-LD).
+    if (typeof window.openProductModal === 'function') {
+      window.openProductModal('${slug}');
     }
   });
 </script>
