@@ -176,8 +176,12 @@ function getFilteredProducts() {
 
 function productCardHTML(p) {
   const rating = RATINGS.get(p.id);
+  // Cards are real links to the crawlable static page (product/<slug>.html)
+  // so search engines and shared links land on a real URL. The modal is
+  // still used for the fast in-store "Quick view" flow via the button below.
+  const href = p.slug ? `product/${p.slug}.html` : "#";
   return `
-    <div class="product-card" data-id="${p.id}">
+    <a class="product-card" data-id="${p.id}" data-slug="${p.slug || ""}" href="${href}">
       <button class="heart-btn ${Wishlist.has(p.id) ? "active" : ""}" data-wishlist-id="${p.id}" title="Save for later">♥</button>
       ${p.stock_qty <= 5 && p.stock_qty > 0 ? '<div class="badge">LOW STOCK</div>' : ""}
       ${p.stock_qty === 0 ? '<div class="badge">SOLD OUT</div>' : ""}
@@ -188,8 +192,9 @@ function productCardHTML(p) {
         <div class="name">${p.name}</div>
         <div class="price">₹${Number(p.price_inr).toLocaleString("en-IN")}</div>
         ${rating ? `<div class="stars" title="${rating.avg.toFixed(1)} / 5">${starString(rating.avg)} <span class="stars-count">(${rating.count})</span></div>` : ""}
+        <button class="quick-view-btn" type="button" data-quickview-id="${p.id}">Quick view</button>
       </div>
-    </div>
+    </a>
   `;
 }
 
@@ -208,17 +213,22 @@ function renderGrid() {
 
   grid.innerHTML = list.map(productCardHTML).join("");
 
-  grid.querySelectorAll(".product-card").forEach((card) => {
-    card.addEventListener("click", (e) => {
-      if (e.target.closest(".heart-btn")) return;
-      openProductModal(card.dataset.id);
-    });
-  });
+  // Cards are <a> tags now (real navigation to product/<slug>.html), so
+  // the heart button and quick-view button must stop the click from
+  // bubbling into the link's default navigation.
   grid.querySelectorAll(".heart-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
+      e.preventDefault();
       e.stopPropagation();
       Wishlist.toggle(btn.dataset.wishlistId);
       renderGrid();
+    });
+  });
+  grid.querySelectorAll(".quick-view-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openProductModal(btn.dataset.quickviewId);
     });
   });
 }
@@ -260,10 +270,13 @@ function openSizeGuide(guideType) {
 // ---------- Product modal (gallery, variants, qty, reviews, related) ----------
 let modalState = { productId: null, size: "", color: "", qty: 1 };
 
-async function openProductModal(productId) {
-  const p = PRODUCTS.find((x) => x.id === productId);
+async function openProductModal(productKey) {
+  // productKey can be either the product's id (used by the in-grid quick
+  // view button and related-products strip) or its slug (used by the
+  // static product/<slug>.html pages, which don't know the DB id).
+  const p = PRODUCTS.find((x) => x.id === productKey || x.slug === productKey);
   if (!p) return;
-  modalState = { productId, size: "", color: "", qty: 1 };
+  modalState = { productId: p.id, size: "", color: "", qty: 1 };
 
   const images = [p.image_url, ...(p.gallery_urls || [])].filter(Boolean);
   const rating = RATINGS.get(p.id);
@@ -534,4 +547,15 @@ document.getElementById("cartToggle").addEventListener("click", () => toggleCart
 document.getElementById("closeCart").addEventListener("click", () => toggleCart(false));
 document.getElementById("backdrop").addEventListener("click", () => toggleCart(false));
 
-loadProducts();
+// Expose the load promise so static product/<slug>.html pages can wait
+// for PRODUCTS to be populated before calling openProductModal — avoids
+// a race where the page's auto-open script fires before data arrives.
+window.productsReady = loadProducts();
+
+window.productsReady.then(() => {
+  const params = new URLSearchParams(window.location.search);
+  const productKey = params.get("product");
+  if (productKey) openProductModal(productKey);
+});
+
+
