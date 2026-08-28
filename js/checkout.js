@@ -32,12 +32,19 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
   };
 
   try {
-    // 1. Ask our edge function to create a Cashfree order (server-side, trusted prices)
+    // 1. Ask our edge function to create a Cashfree order (server-side, trusted prices).
+    // Size/color are carried along per line so fulfillment knows what to pack —
+    // they don't affect the price, which is always re-checked server-side.
     const res = await fetch(CREATE_ORDER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        items: Cart.items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
+        items: Cart.items.map((i) => ({
+          product_id: i.product_id,
+          quantity: i.quantity,
+          size: i.size || undefined,
+          color: i.color || undefined,
+        })),
         customer,
       }),
     });
