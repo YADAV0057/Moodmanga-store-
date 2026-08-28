@@ -14,14 +14,14 @@
     <a href="dashboard.html">Dashboard</a>
     <a href="products.html" class="active">Products</a>
     <a href="orders.html">Orders</a>
-    <button id="logoutBtn" class="admin-nav-logout">Sign out</button>
+    <button id="logoutBtn" class="admin-nav-logout" onclick="handleLogout()">Sign out</button>
   </nav>
 </header>
 
 <main class="admin-main">
   <div class="admin-page-header">
     <h1>Products</h1>
-    <button id="openAddModal" class="btn btn-primary">+ Add product</button>
+    <button id="openAddModal" class="btn btn-primary" onclick="openModal()">+ Add product</button>
   </div>
 
   <div class="admin-toolbar">
@@ -59,9 +59,9 @@
   <div class="admin-modal">
     <div class="admin-modal-header">
       <h2 id="modalTitle">Add product</h2>
-      <button id="closeModal" class="admin-modal-close">&times;</button>
+      <button id="closeModal" class="admin-modal-close" onclick="requestCloseModal()">&times;</button>
     </div>
-    <form id="productForm">
+    <form id="productForm" onsubmit="handleSave(event); return false;">
       <input type="hidden" id="productId">
       <label>Name *<input type="text" id="fieldName" required></label>
       <label>Slug *<input type="text" id="fieldSlug" required placeholder="unique-url-slug"></label>
@@ -82,7 +82,7 @@
       </div>
       <div id="formError" class="admin-form-error" hidden></div>
       <div class="admin-modal-actions">
-        <button type="button" id="cancelForm" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="cancelForm" class="btn btn-secondary" onclick="requestCloseModal()">Cancel</button>
         <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
       </div>
     </form>
@@ -96,15 +96,14 @@
     <p id="deleteProductName"></p>
     <p class="admin-modal-warning">This can't be undone.</p>
     <div class="admin-modal-actions">
-      <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
-      <button id="confirmDelete" class="btn btn-danger">Delete</button>
+      <button id="cancelDelete" class="btn btn-secondary" onclick="requestCloseModal()">Cancel</button>
+      <button id="confirmDelete" class="btn btn-danger" onclick="handleConfirmDelete()">Delete</button>
     </div>
   </div>
 </div>
 
 <script src="js/admin-config.js"></script>
 <script src="js/auth-guard.js"></script>
-<script src="js/modal-nav.js"></script>
 <script src="js/products.js"></script>
 </body>
 </html>

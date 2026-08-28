@@ -14,7 +14,7 @@
     <a href="dashboard.html">Dashboard</a>
     <a href="products.html">Products</a>
     <a href="orders.html" class="active">Orders</a>
-    <button id="logoutBtn" class="admin-nav-logout">Sign out</button>
+    <button id="logoutBtn" class="admin-nav-logout" onclick="handleLogout()">Sign out</button>
   </nav>
 </header>
 
@@ -61,7 +61,7 @@
   <div class="admin-modal admin-modal-large">
     <div class="admin-modal-header">
       <h2>Order details</h2>
-      <button id="closeModal" class="admin-modal-close">&times;</button>
+      <button id="closeModal" class="admin-modal-close" onclick="requestCloseModal()">&times;</button>
     </div>
 
     <div id="orderDetailBody">
@@ -111,7 +111,7 @@
         <label>Admin notes (internal only)<textarea id="detailNotes" rows="2"></textarea></label>
         <div id="detailError" class="admin-form-error" hidden></div>
         <div class="admin-modal-actions">
-          <button id="saveOrderBtn" class="btn btn-primary">Save changes</button>
+          <button id="saveOrderBtn" class="btn btn-primary" onclick="handleSaveOrder()">Save changes</button>
         </div>
       </section>
     </div>
@@ -120,7 +120,6 @@
 
 <script src="js/admin-config.js"></script>
 <script src="js/auth-guard.js"></script>
-<script src="js/modal-nav.js"></script>
 <script src="js/orders.js"></script>
 </body>
 </html>
