@@ -1,17 +1,24 @@
 // supabase/functions/create-order/index.ts
-// Creates a Razorpay order + a matching store_orders row (status: 'created').
+// Creates a Cashfree order + a matching store_orders row (status: 'created').
 // Requires these Supabase project secrets (set via `supabase secrets set` or dashboard):
-//   RAZORPAY_KEY_ID
-//   RAZORPAY_KEY_SECRET
+//   CASHFREE_APP_ID
+//   CASHFREE_SECRET_KEY
+//   CASHFREE_ENV               ("sandbox" or "production")
 //   SUPABASE_URL              (auto-provided)
 //   SUPABASE_SERVICE_ROLE_KEY (auto-provided)
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const RAZORPAY_KEY_ID = Deno.env.get("RAZORPAY_KEY_ID")!;
-const RAZORPAY_KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET")!;
+const CASHFREE_APP_ID = Deno.env.get("CASHFREE_APP_ID")!;
+const CASHFREE_SECRET_KEY = Deno.env.get("CASHFREE_SECRET_KEY")!;
+const CASHFREE_ENV = Deno.env.get("CASHFREE_ENV") ?? "sandbox"; // "sandbox" | "production"
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+const CASHFREE_BASE_URL =
+  CASHFREE_ENV === "production"
+    ? "https://api.cashfree.com/pg"
+    : "https://sandbox.cashfree.com/pg";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -71,31 +78,46 @@ Deno.serve(async (req) => {
     const shipping = subtotal >= 999 ? 0 : 79; // flat shipping rule, adjust as needed
     const total = subtotal + shipping;
 
-    // Create the Razorpay order (amount is in paise)
-    const razorpayRes = await fetch("https://api.razorpay.com/v1/orders", {
+    // Cashfree requires a unique order_id per order, unlike Razorpay which generates one for you.
+    const cfOrderId = `mm_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+    // Create the Cashfree order
+    const cfRes = await fetch(`${CASHFREE_BASE_URL}/orders`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Basic " + btoa(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`),
+        "x-api-version": "2023-08-01",
+        "x-client-id": CASHFREE_APP_ID,
+        "x-client-secret": CASHFREE_SECRET_KEY,
       },
       body: JSON.stringify({
-        amount: Math.round(total * 100),
-        currency: "INR",
-        receipt: `mm_${Date.now()}`,
+        order_id: cfOrderId,
+        order_amount: total,
+        order_currency: "INR",
+        customer_details: {
+          customer_id: customer.email.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 50),
+          customer_name: customer.name,
+          customer_email: customer.email,
+          customer_phone: customer.phone,
+        },
+        order_meta: {
+          // return_url is used for redirect-based checkout; {order_id} is substituted by Cashfree
+          return_url: `${req.headers.get("origin") ?? ""}/order-status.html?order_id={order_id}`,
+        },
       }),
     });
 
-    if (!razorpayRes.ok) {
-      const errText = await razorpayRes.text();
-      throw new Error(`Razorpay order creation failed: ${errText}`);
+    if (!cfRes.ok) {
+      const errText = await cfRes.text();
+      throw new Error(`Cashfree order creation failed: ${errText}`);
     }
-    const razorpayOrder = await razorpayRes.json();
+    const cfOrder = await cfRes.json();
 
     // Persist the order in 'created' state
     const { data: orderRow, error: orderErr } = await supabase
       .from("store_orders")
       .insert({
-        razorpay_order_id: razorpayOrder.id,
+        cashfree_order_id: cfOrder.order_id,
         status: "created",
         customer_name: customer.name,
         customer_email: customer.email,
@@ -115,10 +137,9 @@ Deno.serve(async (req) => {
     if (itemsErr) throw itemsErr;
 
     return json({
-      razorpay_order_id: razorpayOrder.id,
-      razorpay_key_id: RAZORPAY_KEY_ID,
-      amount: razorpayOrder.amount,
-      currency: razorpayOrder.currency,
+      cashfree_order_id: cfOrder.order_id,
+      payment_session_id: cfOrder.payment_session_id,
+      cashfree_env: CASHFREE_ENV,
       internal_order_id: orderRow.id,
     });
   } catch (err) {
