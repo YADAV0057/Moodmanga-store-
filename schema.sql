@@ -19,8 +19,8 @@ create table if not exists store_products (
 
 create table if not exists store_orders (
   id uuid primary key default gen_random_uuid(),
-  razorpay_order_id text unique,
-  razorpay_payment_id text,
+   cashfree_order_id text unique,
+  cashfree_payment_id text,
   status text not null default 'created', -- created | paid | failed | shipped | delivered | cancelled
   customer_name text not null,
   customer_email text not null,
