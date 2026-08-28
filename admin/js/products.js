@@ -2,6 +2,25 @@
 // CRUD for store_products. Relies on supabaseClient from admin-config.js
 // and the session guaranteed valid by auth-guard.js.
 
+// --- Modal back-button support (inlined, no external file needed) ---
+// Makes the browser/Android back button close the top-most open modal
+// instead of navigating away from the page or leaving modals stacked
+// with no way to dismiss them.
+const _modalStack = [];
+function openModalWithBackSupport(closeFn) {
+  _modalStack.push(closeFn);
+  history.pushState({ adminModalDepth: _modalStack.length }, document.title);
+}
+function requestCloseModal() {
+  if (_modalStack.length === 0) return;
+  history.back();
+}
+window.addEventListener('popstate', () => {
+  const closeFn = _modalStack.pop();
+  if (closeFn) closeFn();
+});
+// --- end modal back-button support ---
+
 let allProducts = [];
 
 const els = {
@@ -33,24 +52,18 @@ let pendingDeleteId = null;
 init();
 
 async function init() {
-  els.logoutBtn.addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    window.location.href = 'login.html';
-  });
+  try { bindListFilters(); } catch (err) { console.error('products.js: filter bind error', err); }
+  await loadProducts();
+}
 
-  els.openAddModal.addEventListener('click', () => openModal());
-  els.closeModal.addEventListener('click', requestCloseModal);
-  els.cancelForm.addEventListener('click', requestCloseModal);
-  els.form.addEventListener('submit', handleSave);
+function handleLogout() {
+  supabaseClient.auth.signOut().then(() => { window.location.href = 'login.html'; });
+}
 
-  els.cancelDelete.addEventListener('click', requestCloseModal);
-  els.confirmDelete.addEventListener('click', handleConfirmDelete);
-
+function bindListFilters() {
   els.search.addEventListener('input', renderTable);
   els.categoryFilter.addEventListener('change', renderTable);
   els.statusFilter.addEventListener('change', renderTable);
-
-  await loadProducts();
 }
 
 async function loadProducts() {

@@ -2,6 +2,24 @@
 // List/filter orders, view details + line items, update status/tracking/notes.
 // Relies on supabaseClient (admin-config.js) and a session guaranteed by auth-guard.js.
 
+// --- Modal back-button support (inlined, no external file needed) ---
+// Makes the browser/Android back button close the top-most open modal
+// instead of navigating away from the page.
+const _modalStack = [];
+function openModalWithBackSupport(closeFn) {
+  _modalStack.push(closeFn);
+  history.pushState({ adminModalDepth: _modalStack.length }, document.title);
+}
+function requestCloseModal() {
+  if (_modalStack.length === 0) return;
+  history.back();
+}
+window.addEventListener('popstate', () => {
+  const closeFn = _modalStack.pop();
+  if (closeFn) closeFn();
+});
+// --- end modal back-button support ---
+
 let allOrders = [];
 let currentOrderId = null;
 
@@ -36,17 +54,17 @@ const els = {
 init();
 
 async function init() {
-  els.logoutBtn.addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    window.location.href = 'login.html';
-  });
-
-  els.closeModal.addEventListener('click', requestCloseModal);
-  els.saveOrderBtn.addEventListener('click', handleSaveOrder);
-  els.search.addEventListener('input', renderTable);
-  els.statusFilter.addEventListener('change', renderTable);
-
+  try {
+    els.search.addEventListener('input', renderTable);
+    els.statusFilter.addEventListener('change', renderTable);
+  } catch (err) {
+    console.error('orders.js: filter bind error', err);
+  }
   await loadOrders();
+}
+
+function handleLogout() {
+  supabaseClient.auth.signOut().then(() => { window.location.href = 'login.html'; });
 }
 
 async function loadOrders() {
