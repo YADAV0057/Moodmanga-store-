@@ -1,0 +1,41 @@
+# .github/workflows/generate-product-pages.yml
+#
+# Regenerates static /product/<slug>.html pages from Supabase and commits
+# them back to the repo whenever you push to main, or once a day on a
+# schedule (in case products.js/admin edits happen without a push here).
+
+name: Generate product pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 3 * * *'   # daily, off-peak
+  workflow_dispatch: {}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate product pages
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SITE_URL: https://yadav0057.github.io/Moodmanga-store-
+        run: node scripts/generate-product-pages.mjs
+
+      - name: Commit generated pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add product/ sitemap-products.xml
+          git diff --cached --quiet || git commit -m "chore: regenerate product pages [skip ci]"
+          git push
