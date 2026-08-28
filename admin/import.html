@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Import — MoodManga Store Admin</title>
+<link rel="stylesheet" href="css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="admin-topbar">
+  <a href="dashboard.html" class="admin-logo">MoodManga Store Admin</a>
+  <nav class="admin-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="products.html">Products</a>
+    <a href="import.html" class="active">Import</a>
+    <a href="orders.html">Orders</a>
+    <a href="customers.html">Customers</a>
+    <a href="settings.html">Settings</a>
+    <button id="logoutBtn" class="admin-nav-logout" onclick="handleLogout()">Sign out</button>
+  </nav>
+</header>
+
+<main class="admin-main">
+  <div class="admin-page-header">
+    <h1>Import from Meesho</h1>
+  </div>
+
+  <!-- Step 1: paste links -->
+  <section class="admin-order-section">
+    <h3>1. Paste product links</h3>
+    <label style="display:block; margin-bottom:10px;">
+      One Meesho product URL per line (up to 25 at a time)
+      <textarea id="urlsInput" rows="6" style="width:100%; margin-top:6px;" placeholder="https://www.meesho.com/product-name/p/abcd1234"></textarea>
+    </label>
+    <div id="scanError" class="admin-form-error" hidden></div>
+    <button id="scanBtn" class="btn btn-primary" onclick="handleScan()">Scan links</button>
+  </section>
+
+  <!-- Step 2: review results -->
+  <section id="reviewSection" class="admin-order-section" hidden>
+    <h3>2. Review before uploading</h3>
+    <p style="color:#666; font-size:0.9em; margin-bottom:12px;">
+      Fields marked <span style="color:#c0392b;">needs review</span> weren't fully confident — check them.
+      Uncheck any product you don't want to add.
+    </p>
+    <div id="reviewCards"></div>
+    <div id="uploadError" class="admin-form-error" hidden></div>
+    <button id="uploadBtn" class="btn btn-primary" onclick="handleUpload()">Upload selected</button>
+    <span id="uploadStatus" style="margin-left:12px; color:#666;"></span>
+  </section>
+</main>
+
+<script src="js/admin-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/import.js"></script>
+</body>
+</html>
+
