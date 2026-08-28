@@ -1,34 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MoodManga Admin — Dashboard</title>
-<link rel="stylesheet" href="css/admin.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — MoodManga Store Admin</title>
+<link rel="stylesheet" href="css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
-<header class="admin-header">
-  <div class="brand">MoodManga <span>Admin</span></div>
+<header class="admin-topbar">
+  <a href="dashboard.html" class="admin-logo">MoodManga Store Admin</a>
   <nav class="admin-nav">
     <a href="dashboard.html" class="active">Dashboard</a>
     <a href="products.html">Products</a>
     <a href="orders.html">Orders</a>
+    <button id="logoutBtn" class="admin-nav-logout">Sign out</button>
   </nav>
-  <div class="header-actions">
-    <span id="adminName" class="admin-name"></span>
-    <button id="logoutBtn" class="btn btn-dark">LOG OUT</button>
-  </div>
 </header>
 
 <main class="admin-main">
-  <h1>Welcome back</h1>
-  <p class="muted">Dashboard widgets (revenue, low stock, recent orders) land in phase 4 — this page just confirms your login works.</p>
+  <div class="admin-page-header">
+    <h1>Dashboard</h1>
+  </div>
+
+  <div id="loadingState" class="admin-state">Loading dashboard…</div>
+  <div id="errorState" class="admin-state admin-state-error" hidden></div>
+
+  <div id="dashboardBody" hidden>
+    <section class="admin-stat-grid">
+      <div class="admin-stat-card">
+        <span class="admin-stat-label">Revenue (paid orders)</span>
+        <span class="admin-stat-value" id="statRevenue">—</span>
+      </div>
+      <div class="admin-stat-card">
+        <span class="admin-stat-label">Total orders</span>
+        <span class="admin-stat-value" id="statOrderCount">—</span>
+      </div>
+      <div class="admin-stat-card">
+        <span class="admin-stat-label">Pending fulfillment</span>
+        <span class="admin-stat-value" id="statPending">—</span>
+      </div>
+      <div class="admin-stat-card admin-stat-card-warning" id="lowStockCard">
+        <span class="admin-stat-label">Low stock</span>
+        <span class="admin-stat-value" id="statLowStock">—</span>
+      </div>
+    </section>
+
+    <section class="admin-dashboard-section">
+      <div class="admin-section-header">
+        <h2>Recent orders</h2>
+        <a href="orders.html">View all →</a>
+      </div>
+      <div id="recentOrdersEmpty" class="admin-state" hidden>No orders yet.</div>
+      <table id="recentOrdersTable" class="admin-table" hidden>
+        <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody id="recentOrdersTbody"></tbody>
+      </table>
+    </section>
+
+    <section class="admin-dashboard-section">
+      <div class="admin-section-header">
+        <h2>Low-stock products</h2>
+        <a href="products.html">Manage products →</a>
+      </div>
+      <div id="lowStockEmpty" class="admin-state" hidden>All active products are well stocked.</div>
+      <table id="lowStockTable" class="admin-table" hidden>
+        <thead><tr><th>Product</th><th>Category</th><th>Stock</th></tr></thead>
+        <tbody id="lowStockTbody"></tbody>
+      </table>
+    </section>
+  </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/admin-config.js"></script>
 <script src="js/auth-guard.js"></script>
+<script src="js/dashboard.js"></script>
 </body>
 </html>
-
