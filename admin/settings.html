@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discounts & Settings — MoodManga Store Admin</title>
+<link rel="stylesheet" href="css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="admin-topbar">
+  <a href="dashboard.html" class="admin-logo">MoodManga Store Admin</a>
+  <nav class="admin-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="products.html">Products</a>
+    <a href="orders.html">Orders</a>
+    <a href="settings.html" class="active">Settings</a>
+    <button id="logoutBtn" class="admin-nav-logout" onclick="handleLogout()">Sign out</button>
+  </nav>
+</header>
+
+<main class="admin-main">
+  <div class="admin-page-header">
+    <h1>Discounts &amp; Settings</h1>
+  </div>
+
+  <!-- Shipping settings -->
+  <section class="admin-order-section">
+    <h3>Shipping</h3>
+    <div id="settingsError" class="admin-form-error" hidden></div>
+    <div class="admin-form-row">
+      <label>Free shipping threshold (INR)
+        <input type="number" id="fieldShippingThreshold" min="0" step="1">
+      </label>
+      <button id="saveSettingsBtn" class="btn btn-primary" onclick="handleSaveSettings()">Save</button>
+    </div>
+    <p id="settingsSaved" class="admin-modal-warning" style="color:#0a8a3f" hidden>Saved.</p>
+  </section>
+
+  <!-- Coupons -->
+  <div class="admin-page-header">
+    <h1>Coupons</h1>
+    <button id="openAddModal" class="btn btn-primary" onclick="openModal()">+ Add coupon</button>
+  </div>
+
+  <div id="loadingState" class="admin-state">Loading coupons…</div>
+  <div id="errorState" class="admin-state admin-state-error" hidden></div>
+  <div id="emptyState" class="admin-state" hidden>No coupons yet.</div>
+
+  <table id="couponsTable" class="admin-table" hidden>
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Discount</th>
+        <th>Min order</th>
+        <th>Uses</th>
+        <th>Expires</th>
+        <th>Active</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="couponsTbody"></tbody>
+  </table>
+</main>
+
+<!-- Add / Edit coupon modal -->
+<div id="couponModal" class="admin-modal-backdrop" hidden>
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h2 id="modalTitle">Add coupon</h2>
+      <button id="closeModal" class="admin-modal-close" onclick="requestCloseModal()">&times;</button>
+    </div>
+    <form id="couponForm" onsubmit="handleSave(event); return false;">
+      <input type="hidden" id="couponId">
+      <label>Code *
+        <input type="text" id="fieldCode" required placeholder="e.g. WELCOME10" style="text-transform:uppercase">
+      </label>
+      <div class="admin-form-row">
+        <label>Discount type *
+          <select id="fieldDiscountType" required>
+            <option value="percent">Percent off</option>
+            <option value="fixed">Fixed amount off (INR)</option>
+          </select>
+        </label>
+        <label>Discount value *
+          <input type="number" id="fieldDiscountValue" min="0.01" step="0.01" required>
+        </label>
+      </div>
+      <div class="admin-form-row">
+        <label>Min order (INR)
+          <input type="number" id="fieldMinOrder" min="0" step="0.01" value="0">
+        </label>
+        <label>Max uses (blank = unlimited)
+          <input type="number" id="fieldMaxUses" min="1" step="1">
+        </label>
+      </div>
+      <label>Expires at (blank = never)
+        <input type="date" id="fieldExpiresAt">
+      </label>
+      <label class="admin-checkbox-label"><input type="checkbox" id="fieldActive" checked> Active</label>
+      <div id="formError" class="admin-form-error" hidden></div>
+      <div class="admin-modal-actions">
+        <button type="button" id="cancelForm" class="btn btn-secondary" onclick="requestCloseModal()">Cancel</button>
+        <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div id="deleteModal" class="admin-modal-backdrop" hidden>
+  <div class="admin-modal admin-modal-small">
+    <h2>Delete coupon?</h2>
+    <p id="deleteCouponCode"></p>
+    <p class="admin-modal-warning">This can't be undone.</p>
+    <div class="admin-modal-actions">
+      <button id="cancelDelete" class="btn btn-secondary" onclick="requestCloseModal()">Cancel</button>
+      <button id="confirmDelete" class="btn btn-danger" onclick="handleConfirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/admin-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/settings.js"></script>
+</body>
+</html>
