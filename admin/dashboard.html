@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MoodManga Admin — Dashboard</title>
+<link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+<header class="admin-header">
+  <div class="brand">MoodManga <span>Admin</span></div>
+  <nav class="admin-nav">
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="products.html">Products</a>
+    <a href="orders.html">Orders</a>
+  </nav>
+  <div class="header-actions">
+    <span id="adminName" class="admin-name"></span>
+    <button id="logoutBtn" class="btn btn-dark">LOG OUT</button>
+  </div>
+</header>
+
+<main class="admin-main">
+  <h1>Welcome back</h1>
+  <p class="muted">Dashboard widgets (revenue, low stock, recent orders) land in phase 4 — this page just confirms your login works.</p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/admin-config.js"></script>
+<script src="js/auth-guard.js"></script>
+</body>
+</html>
+
