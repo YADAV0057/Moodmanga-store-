@@ -1,33 +1,39 @@
 /* ============================================================
-   MoodManga Store — design tokens
-   Palette: sumi ink black, warm rice-paper, indigo-violet mood accent,
-            hanko-stamp red used sparingly for badges/CTAs only.
-   Type: condensed display (sound-effect energy) + humanist body + mono for prices.
+   MoodManga Store — design tokens (apparel)
+   Palette: soot ink, warm linen canvas, muted dye-indigo,
+            thread-rust used sparingly for tags/badges/CTAs.
+   Type: editorial serif display + humanist body + mono for
+         prices and labels (garment-tag feel).
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  --ink: #1a1815;
-  --paper: #ede6d6;
-  --paper-dim: #e2d9c4;
-  --mood: #5b4b8a;
-  --mood-dim: #7d6fac;
-  --stamp: #c6402f;
-  --line: rgba(26, 24, 21, 0.14);
+  --ink: #18140f;
+  --canvas: #f2ecdc;
+  --canvas-dim: #e8ddc3;
+  --indigo: #4a3f72;
+  --indigo-soft: #8a7cb8;
+  --thread: #a83f2d;
+  --line: rgba(24, 20, 15, 0.14);
 
-  --font-display: 'Anton', sans-serif;
+  --font-display: 'Fraunces', serif;
   --font-body: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'Space Mono', monospace;
 }
 
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--canvas);
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
@@ -37,16 +43,22 @@ a { color: inherit; }
 
 img { max-width: 100%; display: block; }
 
-/* ---------- Torn paper divider (signature texture) ---------- */
-.torn-divider {
-  height: 14px;
-  background: var(--ink);
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14' viewBox='0 0 40 14'%3E%3Cpath d='M0 4 L5 0 L10 6 L15 1 L20 7 L25 2 L30 8 L35 3 L40 5 L40 14 L0 14 Z'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14' viewBox='0 0 40 14'%3E%3Cpath d='M0 4 L5 0 L10 6 L15 1 L20 7 L25 2 L30 8 L35 3 L40 5 L40 14 L0 14 Z'/%3E%3C/svg%3E");
-  -webkit-mask-repeat: repeat-x;
-  mask-repeat: repeat-x;
-  -webkit-mask-size: 40px 14px;
-  mask-size: 40px 14px;
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+/* ---------- Stitched-seam divider (signature texture) ----------
+   A running stitch — echoes a garment seam rather than a page rule. */
+.stitch-divider {
+  height: 16px;
+  background:
+    radial-gradient(circle at center, var(--ink) 1.6px, transparent 1.7px) repeat-x,
+    linear-gradient(var(--line), var(--line)) no-repeat center / 100% 1px;
+  background-size: 16px 16px, 100% 1px;
+  background-position: 8px center, center;
 }
 
 /* ---------- Header ---------- */
@@ -58,14 +70,15 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: space-between;
   padding: 18px 28px;
-  background: var(--paper);
+  background: var(--canvas);
   border-bottom: 1px solid var(--line);
 }
 
 .brand {
   font-family: var(--font-display);
-  font-size: 26px;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 0.2px;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -76,8 +89,8 @@ img { max-width: 100%; display: block; }
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--stamp);
-  color: var(--paper);
+  background: var(--indigo);
+  color: var(--canvas);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,7 +105,7 @@ img { max-width: 100%; display: block; }
 .cart-btn {
   position: relative;
   background: var(--ink);
-  color: var(--paper);
+  color: var(--canvas);
   border: none;
   padding: 10px 18px;
   font-family: var(--font-mono);
@@ -106,8 +119,8 @@ img { max-width: 100%; display: block; }
   position: absolute;
   top: -8px;
   right: -8px;
-  background: var(--stamp);
-  color: var(--paper);
+  background: var(--thread);
+  color: var(--canvas);
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -127,41 +140,44 @@ img { max-width: 100%; display: block; }
 .hero .eyebrow {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--mood);
+  color: var(--indigo);
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(38px, 6vw, 64px);
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(38px, 6vw, 68px);
   line-height: 0.98;
   margin: 0 0 18px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
 }
 
 .hero p {
   font-size: 16px;
   max-width: 46ch;
-  color: rgba(26,24,21,0.75);
+  color: rgba(24, 20, 15, 0.72);
 }
 
-/* ---------- Panel grid (signature layout) ----------
-   Irregular sizes evoke manga page panels, not a uniform product grid. */
+/* ---------- Panel grid (garment rack layout) ----------
+   Tall portrait slots for clothing photography; a few wide slots
+   break the rhythm, like a rack with the odd folded piece on top. */
 .panel-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-auto-rows: 220px;
-  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 340px;
+  gap: 16px;
   padding: 0 28px 80px;
 }
 
 .product-card {
-  grid-column: span 2;
+  grid-column: span 1;
   grid-row: span 1;
   position: relative;
-  background: var(--paper-dim);
+  background: var(--canvas-dim);
   border: 1px solid var(--line);
   overflow: hidden;
   cursor: pointer;
@@ -170,45 +186,59 @@ img { max-width: 100%; display: block; }
   flex-direction: column;
 }
 
-.product-card:nth-child(3n+1) { grid-row: span 2; }
-.product-card:nth-child(5n+2) { grid-column: span 3; }
+.product-card:nth-child(5n+1) { grid-row: span 2; }
+.product-card:nth-child(7n+4) { grid-column: span 2; }
 
 .product-card:hover {
-  transform: rotate(-0.6deg) translateY(-2px);
+  transform: rotate(-0.5deg) translateY(-2px);
   box-shadow: 6px 6px 0 var(--ink);
   z-index: 2;
 }
 
 .product-card .img-wrap {
   flex: 1;
-  background: linear-gradient(135deg, var(--mood-dim), var(--mood));
+  background: linear-gradient(160deg, var(--indigo-soft), var(--indigo));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--paper);
+  color: var(--canvas);
   font-family: var(--font-mono);
   font-size: 12px;
+  letter-spacing: 1px;
   overflow: hidden;
 }
 
 .product-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
+/* Badge styled like a punched hangtag: mono label + a grommet dot */
 .product-card .badge {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: var(--stamp);
-  color: var(--paper);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--thread);
+  color: var(--canvas);
   font-family: var(--font-mono);
   font-size: 10px;
-  padding: 3px 8px;
-  transform: rotate(-6deg);
+  padding: 3px 8px 3px 6px;
+  transform: rotate(-4deg);
   letter-spacing: 0.5px;
+}
+
+.product-card .badge::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--canvas);
+  flex-shrink: 0;
 }
 
 .product-card .info {
   padding: 12px 14px;
-  background: var(--paper);
+  background: var(--canvas);
 }
 
 .product-card .name {
@@ -220,18 +250,18 @@ img { max-width: 100%; display: block; }
 .product-card .price {
   font-family: var(--font-mono);
   font-size: 13px;
-  color: var(--mood);
+  color: var(--indigo);
 }
 
 @media (max-width: 900px) {
-  .panel-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
+  .panel-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 300px; }
   .product-card { grid-column: span 1 !important; grid-row: span 1 !important; }
 }
 
 /* ---------- Product modal ---------- */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(26,24,21,0.6);
+  background: rgba(24, 20, 15, 0.6);
   display: none;
   align-items: center; justify-content: center;
   z-index: 100;
@@ -240,7 +270,7 @@ img { max-width: 100%; display: block; }
 .modal-overlay.open { display: flex; }
 
 .modal {
-  background: var(--paper);
+  background: var(--canvas);
   max-width: 720px;
   width: 100%;
   max-height: 90vh;
@@ -253,7 +283,7 @@ img { max-width: 100%; display: block; }
   position: absolute;
   top: 14px; right: 14px;
   background: var(--ink);
-  color: var(--paper);
+  color: var(--canvas);
   border: none;
   width: 32px; height: 32px;
   font-size: 16px;
@@ -262,14 +292,15 @@ img { max-width: 100%; display: block; }
 
 .modal-body { padding: 32px; }
 .modal-body .img-wrap {
-  height: 260px;
-  background: linear-gradient(135deg, var(--mood-dim), var(--mood));
+  height: 340px;
+  background: linear-gradient(160deg, var(--indigo-soft), var(--indigo));
   display: flex; align-items: center; justify-content: center;
-  color: var(--paper); margin-bottom: 20px;
+  color: var(--canvas); margin-bottom: 20px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px;
 }
-.modal-body h2 { font-family: var(--font-display); font-size: 28px; margin: 0 0 8px; }
-.modal-body .price { font-family: var(--font-mono); font-size: 20px; color: var(--mood); margin-bottom: 16px; }
-.modal-body .desc { color: rgba(26,24,21,0.75); margin-bottom: 24px; }
+.modal-body h2 { font-family: var(--font-display); font-weight: 600; font-style: italic; font-size: 28px; margin: 0 0 8px; }
+.modal-body .price { font-family: var(--font-mono); font-size: 20px; color: var(--indigo); margin-bottom: 16px; }
+.modal-body .desc { color: rgba(24, 20, 15, 0.72); margin-bottom: 24px; }
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -281,15 +312,15 @@ img { max-width: 100%; display: block; }
   border: none;
   cursor: pointer;
 }
-.btn-primary { background: var(--stamp); color: var(--paper); }
-.btn-dark { background: var(--ink); color: var(--paper); }
+.btn-primary { background: var(--thread); color: var(--canvas); }
+.btn-dark { background: var(--ink); color: var(--canvas); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ---------- Cart drawer ---------- */
 .cart-drawer {
   position: fixed; top: 0; right: -420px;
   width: 400px; max-width: 100vw; height: 100vh;
-  background: var(--paper);
+  background: var(--canvas);
   border-left: 1px solid var(--line);
   z-index: 90;
   transition: right 0.25s ease;
@@ -302,7 +333,7 @@ img { max-width: 100%; display: block; }
   border-bottom: 1px solid var(--line);
   display: flex; justify-content: space-between; align-items: center;
 }
-.cart-header h3 { font-family: var(--font-display); margin: 0; font-size: 22px; }
+.cart-header h3 { font-family: var(--font-display); font-weight: 600; font-style: italic; margin: 0; font-size: 22px; }
 
 .cart-items { flex: 1; overflow-y: auto; padding: 16px 24px; }
 
@@ -320,7 +351,7 @@ img { max-width: 100%; display: block; }
 .cart-total { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 16px; margin-bottom: 16px; }
 
 .overlay-backdrop {
-  position: fixed; inset: 0; background: rgba(26,24,21,0.4);
+  position: fixed; inset: 0; background: rgba(24, 20, 15, 0.4);
   display: none; z-index: 80;
 }
 .overlay-backdrop.open { display: block; }
@@ -331,21 +362,19 @@ img { max-width: 100%; display: block; }
   font-family: var(--font-body);
   padding: 12px 14px;
   border: 1px solid var(--line);
-  background: var(--paper-dim);
+  background: var(--canvas-dim);
   font-size: 14px;
 }
-.checkout-form label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(26,24,21,0.6); margin-bottom: -8px; }
+.checkout-form label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(24, 20, 15, 0.6); margin-bottom: -8px; }
 
 .empty-state {
-  text-align: center; padding: 60px 20px; color: rgba(26,24,21,0.5); font-family: var(--font-mono); font-size: 13px;
+  text-align: center; padding: 60px 20px; color: rgba(24, 20, 15, 0.5); font-family: var(--font-mono); font-size: 13px;
 }
 
 footer {
   padding: 40px 28px;
   font-family: var(--font-mono);
   font-size: 12px;
-  color: rgba(26,24,21,0.55);
+  color: rgba(24, 20, 15, 0.55);
   border-top: 1px solid var(--line);
 }
-
-
