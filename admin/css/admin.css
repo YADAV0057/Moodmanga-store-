@@ -188,4 +188,33 @@ body {
 
 .admin-main { padding: 40px 28px; max-width: 1100px; margin: 0 auto; }
 .admin-main h1 { font-family: var(--font-display); font-size: 32px; margin: 0 0 8px; }
-.muted { color: rgba(26,24,21,0.6); }
+.muted { color: rgba(26,24,21,0.6); } 
+
+/* --- Append to admin/css/admin.css for the Orders page (Phase 3) --- */
+
+.admin-modal-large { max-width: 640px; }
+.admin-order-id { font-family: monospace; font-size: 13px; }
+
+.admin-status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: capitalize; background: #eee; color: #444; }
+.admin-status-created { background: #e0e0e0; color: #555; }
+.admin-status-paid { background: #dbeafe; color: #1e40af; }
+.admin-status-processing { background: #fef3c7; color: #92400e; }
+.admin-status-shipped { background: #e0e7ff; color: #3730a3; }
+.admin-status-delivered { background: #d1fae5; color: #065f46; }
+.admin-status-cancelled { background: #fee2e2; color: #991b1b; }
+.admin-status-refunded { background: #fce7f3; color: #9d174d; }
+
+.admin-order-section { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #eee; }
+.admin-order-section:last-child { border-bottom: none; }
+.admin-order-section h3 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; color: #888; letter-spacing: .03em; }
+.admin-order-section label { display: block; margin-bottom: 10px; font-size: 13px; font-weight: 600; }
+.admin-order-section select, .admin-order-section input, .admin-order-section textarea {
+  display: block; width: 100%; margin-top: 4px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-weight: normal; font-size: 14px; box-sizing: border-box;
+}
+
+.admin-table-compact th, .admin-table-compact td { padding: 6px 8px; font-size: 13px; }
+
+.admin-order-totals { display: flex; flex-direction: column; gap: 4px; }
+.admin-order-totals > div { display: flex; justify-content: space-between; font-size: 14px; }
+.admin-order-total-row { font-weight: 700; font-size: 16px; border-top: 1px solid #eee; padding-top: 6px; margin-top: 4px; }
+
