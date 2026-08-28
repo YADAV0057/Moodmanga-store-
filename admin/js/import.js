@@ -54,7 +54,10 @@ async function handleScan() {
       body: JSON.stringify({ urls }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Scan failed');
+    if (!res.ok) {
+      const debugSuffix = data.debug ? ` (debug: ${JSON.stringify(data.debug)})` : '';
+      throw new Error((data.error || 'Scan failed') + debugSuffix);
+    }
 
     scannedProducts = data.products.map(p => ({ ...p, _include: !p.error }));
     renderReviewCards();
