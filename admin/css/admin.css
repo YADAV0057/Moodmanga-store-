@@ -166,8 +166,8 @@ body {
 .btn-danger-outline { background: #fff; color: #b00020; border: 1px solid #b00020; }
 .btn-small { padding: 5px 10px; font-size: 12px; }
 
-.admin-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
-.admin-modal { background: #fff; border-radius: 8px; padding: 20px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+.admin-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 100; }
+.admin-modal-backdrop.active { display: flex; }
 .admin-modal-small { max-width: 360px; }
 .admin-modal-header { display: flex; justify-content: space-between; align-items: center; }
 .admin-modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
