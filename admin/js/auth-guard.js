@@ -7,7 +7,7 @@
 //   <script src="js/auth-guard.js"></script>
 
 (async function guard() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
+  const { data: { session } } = await supabaseClient.auth.getSession(); 
 
   if (!session) {
     window.location.href = "login.html";
