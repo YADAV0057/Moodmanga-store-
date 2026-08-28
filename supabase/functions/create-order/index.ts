@@ -31,7 +31,10 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json();
     const { items, customer } = body as {
-      items: { product_id: string; quantity: number }[];
+      // size/color are customer-chosen variant info, just carried through to
+      // the order record for fulfillment — they don't affect price or stock,
+      // since stock is tracked per-product, not per-variant.
+      items: { product_id: string; quantity: number; size?: string; color?: string }[];
       customer: {
         name: string;
         email: string;
@@ -72,6 +75,8 @@ Deno.serve(async (req) => {
         unit_price_inr: product.price_inr,
         quantity: item.quantity,
         line_total_inr: lineTotal,
+        variant_size: item.size ?? null,
+        variant_color: item.color ?? null,
       };
     });
 
