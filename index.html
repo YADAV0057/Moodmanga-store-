@@ -13,6 +13,9 @@
     <span class="seal">MM</span> MoodManga Store
   </a>
   <div class="header-actions">
+    <button class="icon-btn" id="wishlistToggle" title="Wishlist">
+      ♥ <span class="cart-count" id="wishlistCount">0</span>
+    </button>
     <button class="cart-btn" id="cartToggle">
       BAG <span class="cart-count" id="cartCount">0</span>
     </button>
@@ -24,6 +27,22 @@
   <h1>Clothes for<br>every arc.</h1>
   <p>Everyday fits and statement pieces, sorted by mood, not by season. Free shipping over ₹999.</p>
 </section>
+
+<div class="toolbar">
+  <input type="search" id="searchInput" class="search-input" placeholder="Search pieces…" />
+  <select id="categoryFilter" class="select">
+    <option value="all">All categories</option>
+  </select>
+  <select id="sizeFilter" class="select">
+    <option value="all">All sizes</option>
+  </select>
+  <select id="sortSelect" class="select">
+    <option value="newest">Newest</option>
+    <option value="price-asc">Price: low to high</option>
+    <option value="price-desc">Price: high to low</option>
+    <option value="rating-desc">Top rated</option>
+  </select>
+</div>
 
 <div class="stitch-divider"></div>
 
@@ -42,6 +61,36 @@
   <div class="modal">
     <button class="modal-close" id="closeModal">×</button>
     <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Size guide modal -->
+<div class="modal-overlay" id="sizeGuideModal">
+  <div class="modal">
+    <button class="modal-close" id="closeSizeGuide">×</button>
+    <div class="modal-body">
+      <h2>Size guide</h2>
+      <table class="size-guide-table" data-guide="tops">
+        <thead><tr><th>Size</th><th>Chest (in)</th><th>Length (in)</th></tr></thead>
+        <tbody>
+          <tr><td>S</td><td>36–38</td><td>26</td></tr>
+          <tr><td>M</td><td>39–41</td><td>27</td></tr>
+          <tr><td>L</td><td>42–44</td><td>28</td></tr>
+          <tr><td>XL</td><td>45–47</td><td>29</td></tr>
+        </tbody>
+      </table>
+      <table class="size-guide-table" data-guide="bottoms">
+        <thead><tr><th>Size</th><th>Waist (in)</th><th>Inseam (in)</th></tr></thead>
+        <tbody>
+          <tr><td>28</td><td>28–29</td><td>30</td></tr>
+          <tr><td>30</td><td>30–31</td><td>30</td></tr>
+          <tr><td>32</td><td>32–33</td><td>31</td></tr>
+          <tr><td>34</td><td>34–35</td><td>31</td></tr>
+          <tr><td>36</td><td>36–37</td><td>32</td></tr>
+        </tbody>
+      </table>
+      <p class="size-guide-note">Measurements are of the garment, laid flat. Still unsure? Email SUPPORT@MOODMANGA.IN.</p>
+    </div>
   </div>
 </div>
 
