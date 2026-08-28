@@ -15,6 +15,8 @@ const els = {
   uploadBtn: document.getElementById('uploadBtn'),
   uploadError: document.getElementById('uploadError'),
   uploadStatus: document.getElementById('uploadStatus'),
+  loadCapturedBtn: document.getElementById('loadCapturedBtn'),
+  loadCapturedError: document.getElementById('loadCapturedError'),
 };
 
 function handleLogout() {
@@ -68,6 +70,68 @@ async function handleScan() {
   } finally {
     els.scanBtn.disabled = false;
     els.scanBtn.textContent = 'Scan links';
+  }
+}
+
+// Bookmarklet-captured products land in scraped_products_staging with
+// status 'pending'. This pulls them into the same review/edit UI the
+// URL-scan flow uses, tagging each with _staging_id so upload can mark
+// them as imported afterwards.
+async function handleLoadCaptured() {
+  if (els.loadCapturedError) els.loadCapturedError.hidden = true;
+
+  if (els.loadCapturedBtn) {
+    els.loadCapturedBtn.disabled = true;
+    els.loadCapturedBtn.textContent = 'Loading…';
+  }
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('scraped_products_staging')
+      .select('*')
+      .eq('status', 'pending')
+      .order('captured_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      if (els.loadCapturedError) {
+        els.loadCapturedError.textContent = 'No captured items waiting — capture some from the Meesho app first.';
+        els.loadCapturedError.hidden = false;
+      }
+      return;
+    }
+
+    scannedProducts = data.map(row => ({
+      source_url: row.source_url,
+      name: row.name,
+      description: row.description,
+      price_inr: row.price_inr,
+      compare_at_price_inr: row.compare_at_price_inr,
+      image_url: row.image_url,
+      gallery_urls: row.gallery_urls || [],
+      sizes: row.sizes || [],
+      colors: row.colors || [],
+      category: row.category || 'Clothing',
+      mood_tag: row.mood_tag,
+      stock_qty: row.stock_qty ?? 10,
+      _needs_review: row.needs_review,
+      _include: true,
+      _staging_id: row.id,
+    }));
+
+    renderReviewCards();
+    els.reviewSection.hidden = false;
+  } catch (err) {
+    if (els.loadCapturedError) {
+      els.loadCapturedError.textContent = err.message;
+      els.loadCapturedError.hidden = false;
+    }
+  } finally {
+    if (els.loadCapturedBtn) {
+      els.loadCapturedBtn.disabled = false;
+      els.loadCapturedBtn.textContent = 'Load captured items';
+    }
   }
 }
 
@@ -178,6 +242,24 @@ async function handleUpload() {
     els.uploadError.textContent = 'Upload failed: ' + error.message;
     els.uploadError.hidden = false;
     return;
+  }
+
+  // Mark any bookmarklet-captured rows that made it into this upload as
+  // imported, so they drop out of "Load captured items" next time.
+  const importedStagingIds = scannedProducts
+    .filter(p => p._include && !p.error && p.name && p.price_inr && p._staging_id)
+    .map(p => p._staging_id);
+
+  if (importedStagingIds.length > 0) {
+    const { error: stagingErr } = await supabaseClient
+      .from('scraped_products_staging')
+      .update({ status: 'imported' })
+      .in('id', importedStagingIds);
+    if (stagingErr) {
+      // Non-fatal — the products already uploaded fine, this just means
+      // they may reappear next "Load captured items". Surface it quietly.
+      console.warn('Failed to mark staging rows imported:', stagingErr.message);
+    }
   }
 
   els.uploadStatus.textContent = `Uploaded ${toUpload.length} product(s). View them in Products.`;
