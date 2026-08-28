@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MoodManga Admin — Sign in</title>
+<link rel="stylesheet" href="css/admin.css" />
+</head>
+<body class="login-page">
+
+<div class="login-card">
+  <h1>MoodManga <span>Admin</span></h1>
+  <p class="subtitle">Store manager access only</p>
+
+  <div id="errorBanner" class="error-banner" style="display:none;"></div>
+
+  <form id="loginForm">
+    <label>Email</label>
+    <input type="email" name="email" required autocomplete="username" />
+    <label>Password</label>
+    <input type="password" name="password" required autocomplete="current-password" />
+    <button type="submit" class="btn btn-dark" id="loginBtn">SIGN IN</button>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/admin-config.js"></script>
+<script>
+  // If a not_admin bounce happened, show why.
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("error") === "not_admin") {
+    const banner = document.getElementById("errorBanner");
+    banner.textContent = "That account isn't set up as a store admin. Contact the store owner.";
+    banner.style.display = "block";
+  }
+
+  // If already logged in as an admin, skip straight to the dashboard.
+  (async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      const { data: adminRow } = await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      if (adminRow) window.location.href = "dashboard.html";
+    }
+  })();
+
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("loginBtn");
+    const banner = document.getElementById("errorBanner");
+    banner.style.display = "none";
+    btn.disabled = true;
+    btn.textContent = "SIGNING IN…";
+
+    const form = new FormData(e.target);
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: form.get("email"),
+      password: form.get("password"),
+    });
+
+    if (error) {
+      banner.textContent = error.message;
+      banner.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "SIGN IN";
+      return;
+    }
+
+    // Confirm admin membership before letting them in.
+    const { data: adminRow } = await supabaseClient
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+
+    if (!adminRow) {
+      await supabaseClient.auth.signOut();
+      banner.textContent = "That account isn't set up as a store admin. Contact the store owner.";
+      banner.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "SIGN IN";
+      return;
+    }
+
+    window.location.href = "dashboard.html";
+  });
+</script>
+</body>
+</html>
