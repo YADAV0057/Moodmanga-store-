@@ -492,21 +492,36 @@ function renderRelatedProducts(p) {
     el.innerHTML = "";
     return;
   }
+  // Real <a> links to product/<slug>.html — works whether this strip is
+  // rendered on the homepage (inside the quick-view modal) or on a static
+  // product/<slug>.html page. detailEl's data-slug marks "we're on a
+  // static product page", where links must be relative to that folder
+  // (bare "<slug>.html") instead of the homepage's "product/<slug>.html".
+  const onStaticProductPage = !!document.getElementById("productDetail")?.dataset.slug;
+  const hrefFor = (r) => (r.slug ? (onStaticProductPage ? `${r.slug}.html` : `product/${r.slug}.html`) : "#");
+
   el.innerHTML =
     `<div class="variant-label">You may also like</div><div class="related-grid">` +
     related
       .map(
         (r) => `
-      <div class="related-card" data-id="${r.id}">
+      <a class="related-card" data-id="${r.id}" href="${hrefFor(r)}">
         <div class="img-wrap">${r.image_url ? `<img src="${r.image_url}" alt="${r.name}" />` : (r.mood_tag || r.category).toUpperCase()}</div>
         <div class="name">${r.name}</div>
         <div class="price">₹${Number(r.price_inr).toLocaleString("en-IN")}</div>
-      </div>`,
+      </a>`,
       )
       .join("") +
     `</div>`;
   el.querySelectorAll(".related-card").forEach((card) => {
-    card.addEventListener("click", () => openProductModal(card.dataset.id));
+    card.addEventListener("click", (e) => {
+      // Only the homepage has a #productModal to swap content into — on
+      // static pages there's nothing to intercept the click for, so let
+      // the <a> navigate normally to the related product's real page.
+      if (!document.getElementById("productModal")) return;
+      e.preventDefault();
+      openProductModal(card.dataset.id);
+    });
   });
 }
 
