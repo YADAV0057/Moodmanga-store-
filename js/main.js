@@ -145,6 +145,12 @@ async function loadProducts() {
 function populateFilterOptions() {
   const categorySelect = document.getElementById("categoryFilter");
   const sizeSelect = document.getElementById("sizeFilter");
+  // Static product/<slug>.html pages don't render the filter/sort
+  // controls, so bail out here — otherwise this throws and the promise
+  // from loadProducts() rejects, which silently skips
+  // initStaticProductPage() and leaves the pre-JS fallback HTML stuck
+  // on screen forever.
+  if (!categorySelect || !sizeSelect) return;
 
   const categories = [...new Set(PRODUCTS.map((p) => p.category).filter(Boolean))].sort();
   categorySelect.innerHTML =
@@ -336,6 +342,11 @@ function buildProductDetailHTML(p, images, rating) {
     <button class="btn btn-primary" id="addToCartBtn" ${p.stock_qty === 0 ? "disabled" : ""}>
       ${p.stock_qty === 0 ? "SOLD OUT" : "ADD TO BAG"}
     </button>
+    ${
+      p.stock_qty === 0
+        ? ""
+        : `<button class="btn btn-dark" id="buyNowBtn" style="width:100%;margin-top:8px;">BUY NOW</button>`
+    }
 
     <div class="related-strip" id="relatedStrip"></div>
 
@@ -438,7 +449,29 @@ function wireProductModal(p, images) {
       return;
     }
     Cart.add(p, { size: modalState.size, color: modalState.color, qty: modalState.qty });
-    document.getElementById("productModal").classList.remove("open");
+    // Only the homepage's quick-view uses a modal to close — the static
+    // product/<slug>.html page renders this same markup inline with no
+    // #productModal, so this must be guarded or it throws there.
+    document.getElementById("productModal")?.classList.remove("open");
+  });
+
+  document.getElementById("buyNowBtn")?.addEventListener("click", () => {
+    if ((p.sizes || []).length && !modalState.size) {
+      alert("Pick a size first.");
+      return;
+    }
+    document.getElementById("productModal")?.classList.remove("open");
+    // Bypasses Cart entirely — handed straight to checkout.js's
+    // startBuyNow(), which opens the same checkout modal/form scoped to
+    // just this one line, and never reads or writes Cart.items.
+    window.startBuyNow({
+      product_id: p.id,
+      name: p.name,
+      price: Number(p.price_inr),
+      quantity: modalState.qty,
+      size: modalState.size,
+      color: modalState.color,
+    });
   });
 }
 
