@@ -53,8 +53,9 @@ const Cart = {
     return this.items.reduce((sum, i) => sum + i.quantity, 0);
   },
   renderBadge() {
-    const el = document.getElementById("cartCount");
-    if (el) el.textContent = this.count();
+    document.querySelectorAll("#cartCount").forEach((el) => {
+      el.textContent = this.count();
+    });
   },
 };
 
@@ -130,17 +131,15 @@ async function loadProducts() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    if (grid) grid.innerHTML = `<div class="empty-state">Couldn't load products. ${error.message}</div>`;
+    grid.innerHTML = `<div class="empty-state">Couldn't load products. ${error.message}</div>`;
     console.error(error);
     return;
   }
 
   PRODUCTS = data || [];
   await loadRatingsSummary();
-  if (grid) {
-    populateFilterOptions();
-    renderGrid();
-  }
+  populateFilterOptions();
+  renderGrid();
 }
 
 function populateFilterOptions() {
@@ -237,7 +236,12 @@ function renderGrid() {
   });
 }
 
-// ---------- Filter/search/sort controls (only present on the store grid page) ----------
+// ---------- Filter/search/sort controls ----------
+// These controls (and the grid itself) only exist on the homepage —
+// the static product/<slug>.html pages don't render them, so every
+// lookup here is guarded rather than assumed to exist. Without these
+// guards, main.js would throw on the product pages and silently abort
+// before ever reaching the code that renders the product detail below.
 document.getElementById("searchInput")?.addEventListener("input", (e) => {
   FILTERS.search = e.target.value;
   renderGrid();
@@ -260,38 +264,25 @@ document.getElementById("wishlistToggle")?.addEventListener("click", () => {
   renderGrid();
 });
 
-// ---------- Size guide modal (optional — only wired if present on the page) ----------
+// ---------- Size guide modal ----------
+// Also homepage/modal-only — static product pages don't ship a size
+// guide modal, so openSizeGuide() no-ops gracefully if it's absent.
 document.getElementById("closeSizeGuide")?.addEventListener("click", () => {
   document.getElementById("sizeGuideModal").classList.remove("open");
 });
 function openSizeGuide(guideType) {
-  const sizeGuideModal = document.getElementById("sizeGuideModal");
-  if (!sizeGuideModal) return; // page doesn't include the size guide markup
+  const modal = document.getElementById("sizeGuideModal");
+  if (!modal) return;
   document.querySelectorAll(".size-guide-table").forEach((t) => {
     t.style.display = t.dataset.guide === guideType ? "table" : "none";
   });
-  sizeGuideModal.classList.add("open");
+  modal.classList.add("open");
 }
 
-// ---------- Product detail (gallery, variants, qty, reviews, related) ----------
-// This markup and its wiring are shared between two surfaces:
-//   1. openProductModal()   — popup modal used by "Quick view" on the grid page
-//   2. renderProductDetail() — rendered inline as the main content of a
-//      standalone product/<slug>.html page, so there is exactly ONE place
-//      to actually choose a size and add to bag (no dead-end static page).
+// ---------- Product modal (gallery, variants, qty, reviews, related) ----------
 let modalState = { productId: null, size: "", color: "", qty: 1 };
 
-function buildProductDetailHTML(p, { includeSizeGuide = true } = {}) {
-  const images = [p.image_url, ...(p.gallery_urls || [])].filter(Boolean);
-  const rating = RATINGS.get(p.id);
-
-  // Per-size stock, e.g. { S: 4, M: 0, L: 6 }. A missing key or a
-  // non-numeric value is treated as "stock unknown" (still selectable).
-  const sizeStock = p.size_stock || {};
-  const hasSizes = (p.sizes || []).length > 0;
-  const allSizesSoldOut = hasSizes && p.sizes.every((s) => sizeStock[s] === 0);
-  const outOfStock = p.stock_qty === 0 || allSizesSoldOut;
-
+function buildProductDetailHTML(p, images, rating) {
   return `
     <div class="gallery">
       <div class="img-wrap gallery-main" id="galleryMain">
@@ -315,25 +306,10 @@ function buildProductDetailHTML(p, { includeSizeGuide = true } = {}) {
     <div class="desc">${p.description || ""}</div>
 
     ${
-      hasSizes
+      (p.sizes || []).length
         ? `<div class="variant-row">
-             <div class="variant-label">Size ${includeSizeGuide ? `<button class="size-guide-link" id="sizeGuideBtn" type="button">Size guide</button>` : ""}</div>
-             <div class="size-options">${p.sizes
-               .map((s) => {
-                 const stock = sizeStock[s];
-                 const soldOut = stock === 0;
-                 const lowStock = typeof stock === "number" && stock > 0 && stock <= 2;
-                 const title = soldOut ? "Out of stock" : lowStock ? `Only ${stock} left` : "";
-                 return `<button
-                   class="size-btn${soldOut ? " sold-out" : ""}${lowStock ? " low-stock" : ""}"
-                   data-size="${s}"
-                   ${soldOut ? "disabled" : ""}
-                   ${title ? `title="${title}"` : ""}
-                   style="${soldOut ? "text-decoration:line-through;opacity:.4;cursor:not-allowed;" : ""}"
-                 >${s}</button>`;
-               })
-               .join("")}</div>
-             ${allSizesSoldOut ? `<div class="size-note" style="color:#9c3d3d;font-size:.85rem;margin-top:4px;">All sizes are currently out of stock.</div>` : p.sizes.some((s) => sizeStock[s] === 0) ? `<div class="size-note" style="color:#7a7168;font-size:.8rem;margin-top:4px;">Crossed-out sizes are out of stock.</div>` : ""}
+             <div class="variant-label">Size <button class="size-guide-link" id="sizeGuideBtn" type="button">Size guide</button></div>
+             <div class="size-options">${p.sizes.map((s) => `<button class="size-btn" data-size="${s}">${s}</button>`).join("")}</div>
            </div>`
         : ""
     }
@@ -357,10 +333,9 @@ function buildProductDetailHTML(p, { includeSizeGuide = true } = {}) {
       </div>
     </div>
 
-    <button class="btn btn-primary" id="addToCartBtn" ${outOfStock ? "disabled" : ""}>
-      ${outOfStock ? "SOLD OUT" : "ADD TO BAG"}
+    <button class="btn btn-primary" id="addToCartBtn" ${p.stock_qty === 0 ? "disabled" : ""}>
+      ${p.stock_qty === 0 ? "SOLD OUT" : "ADD TO BAG"}
     </button>
-    <div class="add-to-cart-confirm" id="addToCartConfirm" style="display:none;color:#2f6b2f;font-size:.9rem;margin-top:8px;">Added to your bag ✓</div>
 
     <div class="related-strip" id="relatedStrip"></div>
 
@@ -385,122 +360,93 @@ function buildProductDetailHTML(p, { includeSizeGuide = true } = {}) {
   `;
 }
 
+// Renders a product's full interactive detail (gallery, variants, qty,
+// add-to-bag, related products, reviews) into any container — the
+// in-page modal on the homepage, or the #productDetail slot on a
+// static product/<slug>.html page.
+function renderProductInto(container, p) {
+  modalState = { productId: p.id, size: "", color: "", qty: 1 };
+  const images = [p.image_url, ...(p.gallery_urls || [])].filter(Boolean);
+  const rating = RATINGS.get(p.id);
+
+  container.innerHTML = buildProductDetailHTML(p, images, rating);
+
+  wireProductModal(p, images);
+  renderRelatedProducts(p);
+  loadReviews(p.id);
+}
+
 async function openProductModal(productKey) {
   // productKey can be either the product's id (used by the in-grid quick
-  // view button and related-products strip) or its slug.
+  // view button and related-products strip) or its slug (used by the
+  // static product/<slug>.html pages, which don't know the DB id).
   const p = PRODUCTS.find((x) => x.id === productKey || x.slug === productKey);
   if (!p) return;
-  modalState = { productId: p.id, size: "", color: "", qty: 1 };
 
   const body = document.getElementById("modalBody");
-  if (!body) return; // this page doesn't have the popup modal at all
-  body.innerHTML = buildProductDetailHTML(p);
-
+  renderProductInto(body, p);
   document.getElementById("productModal").classList.add("open");
-  wireProductDetail(p, body, { isModal: true });
-  renderRelatedProducts(p, { navigate: false });
-  loadReviews(p.id);
 }
 
-// Renders the full interactive product experience (gallery, size picker,
-// qty, add-to-bag, reviews) directly into the page — used by standalone
-// product/<slug>.html pages so there is exactly one place to order,
-// instead of a dead-end static page pointing at a separate popup.
-async function renderProductDetail(productKey, containerEl) {
-  const p = PRODUCTS.find((x) => x.id === productKey || x.slug === productKey);
-  if (!p) {
-    containerEl.innerHTML = `<div class="empty-state">Sorry, we couldn't find that product. <a href="../index.html">Browse the store</a></div>`;
-    return;
+function wireProductModal(p, images) {
+  const closeModalBtn = document.getElementById("closeModal");
+  if (closeModalBtn) {
+    closeModalBtn.onclick = () => {
+      document.getElementById("productModal")?.classList.remove("open");
+    };
   }
-  modalState = { productId: p.id, size: "", color: "", qty: 1 };
-  containerEl.innerHTML = buildProductDetailHTML(p, { includeSizeGuide: false });
-  wireProductDetail(p, containerEl, { isModal: false });
-  renderRelatedProducts(p, { navigate: true });
-  loadReviews(p.id);
-}
-
-function wireProductDetail(p, containerEl, { isModal } = { isModal: true }) {
-  if (isModal) {
-    document.getElementById("closeModal")?.addEventListener("click", () => {
-      document.getElementById("productModal").classList.remove("open");
-    });
-  }
-
-  containerEl.querySelectorAll(".gallery-thumbs .thumb").forEach((thumb) => {
+  document.querySelectorAll(".gallery-thumbs .thumb").forEach((thumb) => {
     thumb.addEventListener("click", () => {
-      containerEl.querySelectorAll(".gallery-thumbs .thumb").forEach((t) => t.classList.remove("active"));
+      document.querySelectorAll(".gallery-thumbs .thumb").forEach((t) => t.classList.remove("active"));
       thumb.classList.add("active");
-      containerEl.querySelector("#galleryMain").innerHTML = `<img src="${thumb.dataset.src}" alt="${p.name}" />`;
+      document.getElementById("galleryMain").innerHTML = `<img src="${thumb.dataset.src}" alt="${p.name}" />`;
     });
   });
 
-  containerEl.querySelectorAll(".size-btn").forEach((btn) => {
-    if (btn.disabled) return; // sold-out sizes aren't selectable
+  document.querySelectorAll(".size-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      containerEl.querySelectorAll(".size-btn").forEach((b) => b.classList.remove("selected"));
+      document.querySelectorAll(".size-btn").forEach((b) => b.classList.remove("selected"));
       btn.classList.add("selected");
       modalState.size = btn.dataset.size;
-
-      // Cap the current quantity to what's actually in stock for this size.
-      const stockForSize = (p.size_stock || {})[btn.dataset.size];
-      const maxQty = typeof stockForSize === "number" ? stockForSize : p.stock_qty || 99;
-      modalState.qty = Math.min(modalState.qty, Math.max(1, maxQty));
-      const qtyValueEl = containerEl.querySelector("#qtyValue");
-      if (qtyValueEl) qtyValueEl.textContent = modalState.qty;
     });
   });
 
-  containerEl.querySelectorAll(".swatch").forEach((btn) => {
+  document.querySelectorAll(".swatch").forEach((btn) => {
     btn.addEventListener("click", () => {
-      containerEl.querySelectorAll(".swatch").forEach((b) => b.classList.remove("selected"));
+      document.querySelectorAll(".swatch").forEach((b) => b.classList.remove("selected"));
       btn.classList.add("selected");
       modalState.color = btn.dataset.color;
     });
   });
 
-  const sizeGuideBtn = containerEl.querySelector("#sizeGuideBtn");
+  const sizeGuideBtn = document.getElementById("sizeGuideBtn");
   if (sizeGuideBtn) sizeGuideBtn.addEventListener("click", () => openSizeGuide(p.size_guide || "tops"));
 
-  const qtyValue = containerEl.querySelector("#qtyValue");
-  containerEl.querySelector("#qtyMinus")?.addEventListener("click", () => {
+  const qtyValue = document.getElementById("qtyValue");
+  document.getElementById("qtyMinus").addEventListener("click", () => {
     modalState.qty = Math.max(1, modalState.qty - 1);
     qtyValue.textContent = modalState.qty;
   });
-  containerEl.querySelector("#qtyPlus")?.addEventListener("click", () => {
-    const stockForSize = (p.size_stock || {})[modalState.size];
-    const maxQty = typeof stockForSize === "number" ? stockForSize : p.stock_qty || 99;
-    modalState.qty = Math.min(maxQty || 1, modalState.qty + 1);
+  document.getElementById("qtyPlus").addEventListener("click", () => {
+    modalState.qty = Math.min(p.stock_qty || 99, modalState.qty + 1);
     qtyValue.textContent = modalState.qty;
   });
 
-  containerEl.querySelector("#addToCartBtn")?.addEventListener("click", () => {
+  document.getElementById("addToCartBtn")?.addEventListener("click", () => {
     if ((p.sizes || []).length && !modalState.size) {
       alert("Pick a size first.");
       return;
     }
     Cart.add(p, { size: modalState.size, color: modalState.color, qty: modalState.qty });
-
-    if (isModal) {
-      document.getElementById("productModal").classList.remove("open");
-    } else {
-      // No modal to close on a standalone product page — show inline
-      // confirmation and pop the cart drawer open instead.
-      const confirmEl = containerEl.querySelector("#addToCartConfirm");
-      if (confirmEl) {
-        confirmEl.style.display = "block";
-        setTimeout(() => (confirmEl.style.display = "none"), 3000);
-      }
-      toggleCart(true);
-    }
+    document.getElementById("productModal").classList.remove("open");
   });
 }
 
-function renderRelatedProducts(p, { navigate = false } = {}) {
+function renderRelatedProducts(p) {
   const related = PRODUCTS.filter(
     (x) => x.id !== p.id && (x.category === p.category || x.mood_tag === p.mood_tag),
   ).slice(0, 4);
   const el = document.getElementById("relatedStrip");
-  if (!el) return;
   if (!related.length) {
     el.innerHTML = "";
     return;
@@ -510,7 +456,7 @@ function renderRelatedProducts(p, { navigate = false } = {}) {
     related
       .map(
         (r) => `
-      <div class="related-card" data-id="${r.id}" data-slug="${r.slug || ""}">
+      <div class="related-card" data-id="${r.id}">
         <div class="img-wrap">${r.image_url ? `<img src="${r.image_url}" alt="${r.name}" />` : (r.mood_tag || r.category).toUpperCase()}</div>
         <div class="name">${r.name}</div>
         <div class="price">₹${Number(r.price_inr).toLocaleString("en-IN")}</div>
@@ -519,15 +465,7 @@ function renderRelatedProducts(p, { navigate = false } = {}) {
       .join("") +
     `</div>`;
   el.querySelectorAll(".related-card").forEach((card) => {
-    card.addEventListener("click", () => {
-      // On a standalone product page, navigate to the related product's
-      // own crawlable page instead of stacking a popup on top of it.
-      if (navigate && card.dataset.slug) {
-        window.location.href = `../product/${card.dataset.slug}.html`;
-      } else {
-        openProductModal(card.dataset.id);
-      }
-    });
+    card.addEventListener("click", () => openProductModal(card.dataset.id));
   });
 }
 
@@ -561,9 +499,6 @@ async function loadReviews(productId) {
     .join("");
 }
 
-// Delegated on `document` (not the modal) so this works whether the review
-// form is rendered inside the popup modal or inline on a standalone
-// product page.
 document.addEventListener("submit", async (e) => {
   if (e.target.id !== "reviewForm") return;
   e.preventDefault();
@@ -595,7 +530,6 @@ document.addEventListener("submit", async (e) => {
 // ---------- Cart drawer ----------
 function renderCartDrawer() {
   const itemsEl = document.getElementById("cartItems");
-  if (!itemsEl) return;
   if (!Cart.items.length) {
     itemsEl.innerHTML = `<div class="empty-state">Your bag is empty.</div>`;
   } else {
@@ -625,16 +559,12 @@ function renderCartDrawer() {
       });
     });
   }
-  const totalEl = document.getElementById("cartTotal");
-  if (totalEl) totalEl.textContent = `₹${Cart.total().toLocaleString("en-IN")}`;
+  document.getElementById("cartTotal").textContent = `₹${Cart.total().toLocaleString("en-IN")}`;
 }
 
 function toggleCart(open) {
-  const drawer = document.getElementById("cartDrawer");
-  const backdrop = document.getElementById("backdrop");
-  if (!drawer) return;
-  drawer.classList.toggle("open", open);
-  backdrop?.classList.toggle("open", open);
+  document.getElementById("cartDrawer").classList.toggle("open", open);
+  document.getElementById("backdrop").classList.toggle("open", open);
   if (open) renderCartDrawer();
 }
 
@@ -642,22 +572,28 @@ document.getElementById("cartToggle")?.addEventListener("click", () => toggleCar
 document.getElementById("closeCart")?.addEventListener("click", () => toggleCart(false));
 document.getElementById("backdrop")?.addEventListener("click", () => toggleCart(false));
 
-// Expose the load promise so standalone product/<slug>.html pages can wait
-// for PRODUCTS to be populated before rendering — avoids a race where the
-// page's render call fires before data arrives.
+// ---------- Static product page (product/<slug>.html) ----------
+// generate-product-pages.mjs writes a fallback (pre-JS) view into
+// #productDetail with a data-slug attribute. Once products are loaded,
+// swap that fallback for the same interactive gallery/size/qty/reviews
+// experience used in the homepage's quick-view modal, rendered inline.
+function initStaticProductPage() {
+  const detailEl = document.getElementById("productDetail");
+  if (!detailEl) return;
+  const slug = detailEl.dataset.slug;
+  const p = PRODUCTS.find((x) => x.slug === slug);
+  if (!p) return;
+  renderProductInto(detailEl, p);
+}
+
+// Expose the load promise so static product/<slug>.html pages can wait
+// for PRODUCTS to be populated before calling openProductModal — avoids
+// a race where the page's auto-open script fires before data arrives.
 window.productsReady = loadProducts();
 
 window.productsReady.then(() => {
-  // Standalone product page: render the full interactive product view
-  // (gallery, sizes, qty, add-to-bag, reviews) directly into the page —
-  // this is the ONE place to order, not a redirect to a popup elsewhere.
-  const detailEl = document.getElementById("productDetail");
-  if (detailEl && detailEl.dataset.slug) {
-    renderProductDetail(detailEl.dataset.slug, detailEl);
-    return;
-  }
+  initStaticProductPage();
 
-  // Grid page: allow deep-linking a quick-view modal via ?product=slug.
   const params = new URLSearchParams(window.location.search);
   const productKey = params.get("product");
   if (productKey) openProductModal(productKey);
