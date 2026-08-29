@@ -7,7 +7,7 @@
 // schema.org Product JSON-LD, and redirects/links back to the storefront
 // so the modal-based quick-view/add-to-cart flow still works.
 
-import { writeFile, mkdir } from 'node:fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises'; 
 import path from 'node:path';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
