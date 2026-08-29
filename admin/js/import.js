@@ -3,6 +3,7 @@
 // valid by auth-guard.js.
 
 const SCRAPE_URL = `${SUPABASE_URL}/functions/v1/scrape-meesho-products`;
+const CLEAN_PRODUCT_URL = `${SUPABASE_URL}/functions/v1/admin-clean-product`;
 
 let scannedProducts = [];
 
@@ -169,6 +170,12 @@ function renderReviewCards() {
           <label>Sizes (comma separated)<input type="text" data-field="sizes" data-idx="${i}" value="${escapeHtml((p.sizes || []).join(', '))}"></label>
           <label>Stock qty<input type="number" data-field="stock_qty" data-idx="${i}" value="${p.stock_qty ?? 10}" min="0" step="1"></label>
         </div>
+        <label>SEO keywords (comma separated)<input type="text" data-field="seo_keywords" data-idx="${i}" value="${escapeHtml((p.seo_keywords || []).join(', '))}"></label>
+        <label>Meta description<input type="text" data-field="meta_description" data-idx="${i}" maxlength="155" value="${escapeHtml(p.meta_description || '')}"></label>
+        <button type="button" class="clean-ai-btn" data-idx="${i}" ${p._cleaning ? 'disabled' : ''}>
+          ${p._cleaning ? '✨ Cleaning…' : '✨ Clean with AI'}
+        </button>
+        ${p._cleanError ? `<span style="color:#c0392b; font-size:0.8em; margin-left:8px;">${escapeHtml(p._cleanError)}</span>` : ''}
       </div>`;
   }).join('');
 
@@ -176,6 +183,50 @@ function renderReviewCards() {
     el.addEventListener('input', handleFieldEdit);
     el.addEventListener('change', handleFieldEdit);
   });
+  els.reviewCards.querySelectorAll('.clean-ai-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleCleanWithAI(Number(btn.dataset.idx)));
+  });
+}
+
+// Sends one product's raw name/description to admin-clean-product (Gemini)
+// and fills in display title, SEO keywords, and meta description with the
+// result. Admin can still edit anything before uploading — this never
+// writes to the DB itself.
+async function handleCleanWithAI(idx) {
+  const product = scannedProducts[idx];
+  if (!product) return;
+
+  product._cleaning = true;
+  product._cleanError = null;
+  renderReviewCards();
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const res = await fetch(CLEAN_PRODUCT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        products: [{ name: product.name, description: product.description }],
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Clean failed');
+
+    const result = data.products[0];
+    if (result.error) throw new Error(result.error);
+
+    product.name = result.display_title;
+    product.seo_keywords = result.seo_keywords;
+    product.meta_description = result.meta_description;
+  } catch (err) {
+    product._cleanError = err.message;
+  } finally {
+    product._cleaning = false;
+    renderReviewCards();
+  }
 }
 
 function handleFieldEdit(e) {
@@ -187,8 +238,8 @@ function handleFieldEdit(e) {
 
   if (field === '_include') {
     product._include = el.checked;
-  } else if (field === 'sizes') {
-    product.sizes = el.value.split(',').map(s => s.trim()).filter(Boolean);
+  } else if (field === 'sizes' || field === 'seo_keywords') {
+    product[field] = el.value.split(',').map(s => s.trim()).filter(Boolean);
   } else if (field === 'price_inr' || field === 'compare_at_price_inr' || field === 'stock_qty') {
     product[field] = el.value === '' ? null : Number(el.value);
   } else {
@@ -215,6 +266,8 @@ async function handleUpload() {
       category: p.category || 'Clothing',
       mood_tag: p.mood_tag || null,
       stock_qty: p.stock_qty ?? 10,
+      seo_keywords: p.seo_keywords || [],
+      meta_description: p.meta_description || null,
       is_active: true,
       size_guide: 'tops',
     }));
