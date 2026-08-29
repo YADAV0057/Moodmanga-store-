@@ -29,29 +29,35 @@ function escapeHtml(str = '') {
     .replace(/'/g, '&#39;');
 }
 
-// Turns a "Label: value" line-based description into tidy <dl> markup.
-// Falls back to plain paragraphs (with <br> for newlines) if the text
-// doesn't look like a field list.
+// Turns a line-based description into tidy markup. Handles three kinds
+// of lines: "Label: value" (bolded label), "Label:" with nothing after
+// it (a section header, e.g. "Sizes:"), and plain continuation lines
+// (e.g. "XS, S (Bust Size: 36 in...)") which get indented under the
+// most recent header.
 function formatDescription(description = '') {
   const lines = description
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const fieldLine = /^([A-Za-z][A-Za-z /-]{1,30}):\s*(.+)$/;
-  const isFieldList = lines.length > 0 && lines.every((l) => fieldLine.test(l));
+  if (lines.length === 0) return '';
 
-  if (isFieldList) {
-    const rows = lines
-      .map((l) => {
-        const m = l.match(fieldLine);
-        return `<div class="spec-row"><dt>${escapeHtml(m[1])}</dt><dd>${escapeHtml(m[2])}</dd></div>`;
-      })
-      .join('\n');
-    return `<dl class="spec-list">${rows}</dl>`;
-  }
+  const fieldLine = /^([A-Za-z][A-Za-z /-]{1,30}):\s*(.*)$/;
+  const rows = lines.map((l) => {
+    const m = l.match(fieldLine);
+    if (m && m[2]) {
+      // "Label: value"
+      return `<p class="spec-line"><strong>${escapeHtml(m[1])}:</strong> ${escapeHtml(m[2])}</p>`;
+    }
+    if (m && !m[2]) {
+      // "Label:" with nothing after it — treat as a section header
+      return `<p class="spec-header"><strong>${escapeHtml(m[1])}:</strong></p>`;
+    }
+    // Plain continuation line (e.g. a size row)
+    return `<p class="spec-sub">${escapeHtml(l)}</p>`;
+  });
 
-  return `<p>${escapeHtml(description).replace(/\n/g, '<br>')}</p>`;
+  return `<div class="spec-list">${rows.join('\n')}</div>`;
 }
 
 function buildPage(product) {
@@ -199,23 +205,31 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
   }
   .spec-list {
     margin: 0 0 20px;
+    padding-top: 14px;
     border-top: 1px solid var(--pp-border);
   }
-  .spec-row {
-    display: flex;
-    gap: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid var(--pp-border);
+  .spec-list p {
+    margin: 0 0 8px;
     font-size: 0.95rem;
+    line-height: 1.5;
   }
-  .spec-row dt {
-    flex: 0 0 42%;
+  .spec-line strong {
+    color: var(--pp-ink);
+  }
+  .spec-header {
+    margin-top: 14px !important;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: var(--pp-muted);
-    font-weight: 600;
   }
-  .spec-row dd {
-    margin: 0;
-    flex: 1;
+  .spec-sub {
+    margin-left: 14px !important;
+    color: #4a4038;
+  }
+  .spec-sub::before {
+    content: "– ";
+    color: var(--pp-muted);
   }
   .pp-cta {
     display: block;
