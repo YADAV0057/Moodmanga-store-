@@ -102,12 +102,17 @@ function buildPage(product) {
     },
   };
 
-  const thumbs = images
-    .map(
-      (src, i) =>
-        `<img src="${escapeHtml(src)}" alt="${escapeHtml(name)} view ${i + 1}" class="thumb${i === 0 ? ' active' : ''}" data-full="${escapeHtml(src)}">`
-    )
-    .join('\n');
+  // Lightweight pre-JS content: shown briefly while main.js loads the
+  // real interactive view, and is what search engines / no-JS visitors
+  // see. main.js immediately replaces this with the full experience
+  // (size picker, qty, add to bag, reviews) — there is only ONE actual
+  // ordering surface; this is just its instant-paint placeholder.
+  const fallbackHtml = `
+    ${images[0] ? `<img class="img-wrap gallery-main" style="width:100%;display:block;" src="${escapeHtml(images[0])}" alt="${escapeHtml(name)}">` : ''}
+    <h2>${escapeHtml(name)}</h2>
+    <div class="price">₹${price_inr}${compare_at_price_inr ? ` <s>₹${compare_at_price_inr}</s>` : ''}</div>
+    <div class="desc">${formatDescription(description)}</div>
+  `;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -129,12 +134,14 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
 <link rel="stylesheet" href="../css/style.css">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 
-<!-- This page is a crawlable, shareable landing page for the product.
-     It reuses the site's fonts/colors via CSS variables where possible,
-     with a self-contained layout so it looks right even before/without
-     custom classes in css/style.css. It also opens the existing product
-     modal (main.js) on load via the ?product= query param, so
-     add-to-cart / quick-view logic stays in one place. -->
+<!-- This page IS the storefront's single ordering surface for this
+     product — main.js renders the same gallery/size-picker/cart/reviews
+     UI used elsewhere directly into #productDetail below. It reuses the
+     site's existing classes (.gallery, .price, .variant-row, .size-btn,
+     .btn-primary, etc.) so it's already styled by css/style.css. This
+     <style> block only adds page-level layout: header, cart drawer, and
+     a content wrapper — plus safety-net fallbacks in case those classes
+     aren't defined for a bare page context. -->
 <style>
   :root {
     --pp-bg: #faf3e8;
@@ -144,168 +151,103 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
     --pp-muted: #7a7168;
     --pp-border: #e4d8c4;
   }
-  .pp-wrap {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 0 48px;
-    background: var(--pp-bg);
-    color: var(--pp-ink);
-    font-family: Georgia, 'Times New Roman', serif;
-  }
-  .pp-gallery {
-    position: relative;
-  }
-  .pp-gallery img.main {
-    width: 100%;
-    display: block;
-  }
-  .pp-thumbs {
+  body { margin: 0; background: var(--pp-bg); color: var(--pp-ink); font-family: Georgia, 'Times New Roman', serif; }
+  .ppage-header {
     display: flex;
-    gap: 8px;
-    padding: 10px 16px;
-    overflow-x: auto;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--pp-border);
   }
-  .pp-thumbs .thumb {
-    width: 60px;
-    height: 76px;
-    object-fit: cover;
-    border: 2px solid transparent;
+  .ppage-header .logo { font-size: 1.2rem; text-decoration: underline; color: var(--pp-ink); }
+  .ppage-cart-btn {
+    position: relative;
+    background: none;
+    border: 1px solid var(--pp-border);
     border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 1rem;
     cursor: pointer;
-    opacity: 0.75;
+    font-family: Arial, sans-serif;
   }
-  .pp-thumbs .thumb.active {
-    border-color: var(--pp-accent);
-    opacity: 1;
-  }
-  .pp-body {
-    padding: 16px 20px 0;
-  }
-  .pp-body h1 {
-    font-style: italic;
-    font-weight: 700;
-    font-size: 1.7rem;
-    line-height: 1.25;
-    margin: 4px 0 10px;
-  }
-  .pp-price {
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin: 0 0 4px;
-  }
-  .pp-price s {
-    color: var(--pp-muted);
-    font-weight: 400;
-    margin-left: 8px;
-  }
-  .pp-stock {
-    font-size: 0.85rem;
-    margin: 0 0 18px;
-    color: ${inStock ? '#2f6b2f' : '#9c3d3d'};
-  }
-  .spec-list {
-    margin: 0 0 20px;
-    padding-top: 14px;
-    border-top: 1px solid var(--pp-border);
-  }
-  .spec-list p {
-    margin: 0 0 8px;
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-  .spec-line strong {
-    color: var(--pp-ink);
-  }
-  .spec-header {
-    margin-top: 14px !important;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--pp-muted);
-  }
-  .spec-sub {
-    margin-left: 14px !important;
-    color: #4a4038;
-  }
-  .spec-sub::before {
-    content: "– ";
-    color: var(--pp-muted);
-  }
-  .pp-cta {
-    display: block;
-    text-align: center;
+  .ppage-cart-count {
+    display: inline-block;
+    min-width: 16px;
+    padding: 0 4px;
+    margin-left: 4px;
     background: var(--pp-accent);
     color: #fff;
-    text-decoration: none;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 15px 20px;
-    border-radius: 3px;
-    margin: 10px 0 6px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    line-height: 16px;
   }
-  .pp-cta:hover {
-    background: var(--pp-accent-hover);
+  .ppage-wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 20px 48px;
   }
-  .pp-back {
-    display: inline-block;
-    margin: 18px 0 0;
-    font-size: 0.85rem;
-    color: var(--pp-muted);
-    text-decoration: underline;
+  .ppage-wrap h2 { font-style: italic; font-size: 1.7rem; line-height: 1.25; margin: 14px 0 8px; }
+  .ppage-wrap .price { font-size: 1.15rem; font-weight: 600; }
+  .ppage-wrap .btn-primary, .ppage-wrap #addToCartBtn {
+    display: block; width: 100%; text-align: center; background: var(--pp-accent); color: #fff;
+    border: none; text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase;
+    font-family: Arial, Helvetica, sans-serif; font-size: 0.85rem; font-weight: 700;
+    padding: 15px 20px; border-radius: 3px; margin: 14px 0 6px; cursor: pointer;
   }
+  .ppage-wrap #addToCartBtn:hover { background: var(--pp-accent-hover); }
+  .ppage-wrap #addToCartBtn:disabled { background: var(--pp-muted); cursor: not-allowed; }
+  .ppage-wrap .size-btn, .ppage-wrap .swatch {
+    font-family: Arial, sans-serif; border: 1px solid var(--pp-border); background: #fff;
+    padding: 6px 12px; margin: 0 6px 6px 0; border-radius: 3px; cursor: pointer;
+  }
+  .ppage-wrap .size-btn.selected { border-color: var(--pp-accent); background: var(--pp-accent); color: #fff; }
+  .ppage-wrap .qty-stepper button { font-family: Arial, sans-serif; padding: 4px 10px; }
+  .ppage-back { display: inline-block; margin: 18px 0 0; font-size: 0.85rem; color: var(--pp-muted); text-decoration: underline; }
+  .spec-list { margin: 0 0 20px; padding-top: 14px; border-top: 1px solid var(--pp-border); }
+  .spec-list p { margin: 0 0 8px; font-size: 0.95rem; line-height: 1.5; }
+  .spec-header { margin-top: 14px !important; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--pp-muted); }
+  .spec-sub { margin-left: 14px !important; color: #4a4038; }
+  .spec-sub::before { content: "– "; color: var(--pp-muted); }
+
+  /* Cart drawer — self-contained so it works even if css/style.css
+     doesn't define these page-level IDs. */
+  #backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40; }
+  #backdrop.open { opacity: 1; pointer-events: auto; }
+  #cartDrawer {
+    position: fixed; top: 0; right: 0; height: 100%; width: min(340px, 88vw);
+    background: var(--pp-bg); box-shadow: -2px 0 12px rgba(0,0,0,.2);
+    transform: translateX(100%); transition: transform .25s; z-index: 41;
+    padding: 18px; box-sizing: border-box; overflow-y: auto;
+  }
+  #cartDrawer.open { transform: translateX(0); }
+  #cartDrawer .cart-item { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--pp-border); font-size: 0.9rem; }
+  #cartDrawer .qty-controls { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  #cartDrawer .qty-controls button { font-family: Arial, sans-serif; }
+  #closeCart { background: none; border: none; font-size: 1.2rem; cursor: pointer; float: right; }
 </style>
 </head>
-<body data-product-slug="${escapeHtml(slug)}">
+<body>
 
-<header class="site-header">
+<header class="ppage-header site-header">
   <a href="../index.html" class="logo">MoodManga Store</a>
+  <button type="button" id="cartToggle" class="ppage-cart-btn">🛍 Bag <span id="cartCount" class="ppage-cart-count">0</span></button>
 </header>
 
-<main class="pp-wrap product-page">
-  <div class="pp-gallery">
-    ${images[0] ? `<img class="main" id="pp-main-image" src="${escapeHtml(images[0])}" alt="${escapeHtml(name)}">` : ''}
-  </div>
-  ${images.length > 1 ? `<div class="pp-thumbs">${thumbs}</div>` : ''}
-
-  <div class="pp-body">
-    <h1>${escapeHtml(name)}</h1>
-    <p class="pp-price">₹${price_inr}${compare_at_price_inr ? ` <s>₹${compare_at_price_inr}</s>` : ''}</p>
-    <p class="pp-stock">${inStock ? 'In stock' : 'Out of stock'}</p>
-
-    ${formatDescription(description)}
-
-    <a href="../index.html?product=${encodeURIComponent(slug)}" class="pp-cta">View in store / Add to cart</a>
-    <a href="../index.html" class="pp-back">&larr; Back to all products</a>
-  </div>
+<main class="ppage-wrap product-page">
+  <div id="productDetail" data-slug="${escapeHtml(slug)}">${fallbackHtml}</div>
+  <a href="../index.html" class="ppage-back">&larr; Back to all products</a>
 </main>
+
+<div id="backdrop"></div>
+<aside id="cartDrawer">
+  <button type="button" id="closeCart">&times;</button>
+  <h3>Your Bag</h3>
+  <div id="cartItems"></div>
+  <div style="margin-top:14px;font-weight:600;">Total: <span id="cartTotal">₹0</span></div>
+</aside>
 
 <script src="../js/config.js"></script>
 <script src="../js/main.js"></script>
-<script>
-  // Simple thumbnail swap (works even if main.js hasn't loaded yet).
-  document.addEventListener('DOMContentLoaded', function () {
-    var mainImg = document.getElementById('pp-main-image');
-    document.querySelectorAll('.pp-thumbs .thumb').forEach(function (t) {
-      t.addEventListener('click', function () {
-        if (mainImg) mainImg.src = t.dataset.full;
-        document.querySelectorAll('.pp-thumbs .thumb').forEach(function (o) {
-          o.classList.remove('active');
-        });
-        t.classList.add('active');
-      });
-    });
-
-    // If main.js exposes openProductModal(slug), auto-open it for visitors
-    // who land here directly, without breaking crawlers (they only see the
-    // static HTML above, which already has full title/description/JSON-LD).
-    if (typeof window.openProductModal === 'function') {
-      window.openProductModal('${slug}');
-    }
-  });
-</script>
 </body>
 </html>
 `;
