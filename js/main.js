@@ -281,6 +281,14 @@ async function openProductModal(productKey) {
   const images = [p.image_url, ...(p.gallery_urls || [])].filter(Boolean);
   const rating = RATINGS.get(p.id);
 
+  // Per-size stock, e.g. { S: 4, M: 0, L: 6 }. A missing key or a
+  // non-numeric value is treated as "stock unknown" (still selectable).
+  const sizeStock = p.size_stock || {};
+  const hasSizes = (p.sizes || []).length > 0;
+  const allSizesSoldOut =
+    hasSizes && p.sizes.every((s) => sizeStock[s] === 0);
+  const outOfStock = p.stock_qty === 0 || allSizesSoldOut;
+
   const body = document.getElementById("modalBody");
   body.innerHTML = `
     <div class="gallery">
@@ -305,10 +313,25 @@ async function openProductModal(productKey) {
     <div class="desc">${p.description || ""}</div>
 
     ${
-      (p.sizes || []).length
+      hasSizes
         ? `<div class="variant-row">
              <div class="variant-label">Size <button class="size-guide-link" id="sizeGuideBtn" type="button">Size guide</button></div>
-             <div class="size-options">${p.sizes.map((s) => `<button class="size-btn" data-size="${s}">${s}</button>`).join("")}</div>
+             <div class="size-options">${p.sizes
+               .map((s) => {
+                 const stock = sizeStock[s];
+                 const soldOut = stock === 0;
+                 const lowStock = typeof stock === "number" && stock > 0 && stock <= 2;
+                 const title = soldOut ? "Out of stock" : lowStock ? `Only ${stock} left` : "";
+                 return `<button
+                   class="size-btn${soldOut ? " sold-out" : ""}${lowStock ? " low-stock" : ""}"
+                   data-size="${s}"
+                   ${soldOut ? "disabled" : ""}
+                   ${title ? `title="${title}"` : ""}
+                   style="${soldOut ? "text-decoration:line-through;opacity:.4;cursor:not-allowed;" : ""}"
+                 >${s}</button>`;
+               })
+               .join("")}</div>
+             ${allSizesSoldOut ? `<div class="size-note" style="color:#9c3d3d;font-size:.85rem;margin-top:4px;">All sizes are currently out of stock.</div>` : p.sizes.some((s) => sizeStock[s] === 0) ? `<div class="size-note" style="color:#7a7168;font-size:.8rem;margin-top:4px;">Crossed-out sizes are out of stock.</div>` : ""}
            </div>`
         : ""
     }
@@ -332,8 +355,8 @@ async function openProductModal(productKey) {
       </div>
     </div>
 
-    <button class="btn btn-primary" id="addToCartBtn" ${p.stock_qty === 0 ? "disabled" : ""}>
-      ${p.stock_qty === 0 ? "SOLD OUT" : "ADD TO BAG"}
+    <button class="btn btn-primary" id="addToCartBtn" ${outOfStock ? "disabled" : ""}>
+      ${outOfStock ? "SOLD OUT" : "ADD TO BAG"}
     </button>
 
     <div class="related-strip" id="relatedStrip"></div>
@@ -379,10 +402,18 @@ function wireProductModal(p, images) {
   });
 
   document.querySelectorAll(".size-btn").forEach((btn) => {
+    if (btn.disabled) return; // sold-out sizes aren't selectable
     btn.addEventListener("click", () => {
       document.querySelectorAll(".size-btn").forEach((b) => b.classList.remove("selected"));
       btn.classList.add("selected");
       modalState.size = btn.dataset.size;
+
+      // Cap the current quantity to what's actually in stock for this size.
+      const stockForSize = (p.size_stock || {})[btn.dataset.size];
+      const maxQty = typeof stockForSize === "number" ? stockForSize : p.stock_qty || 99;
+      modalState.qty = Math.min(modalState.qty, Math.max(1, maxQty));
+      const qtyValueEl = document.getElementById("qtyValue");
+      if (qtyValueEl) qtyValueEl.textContent = modalState.qty;
     });
   });
 
@@ -403,7 +434,9 @@ function wireProductModal(p, images) {
     qtyValue.textContent = modalState.qty;
   });
   document.getElementById("qtyPlus").addEventListener("click", () => {
-    modalState.qty = Math.min(p.stock_qty || 99, modalState.qty + 1);
+    const stockForSize = (p.size_stock || {})[modalState.size];
+    const maxQty = typeof stockForSize === "number" ? stockForSize : p.stock_qty || 99;
+    modalState.qty = Math.min(maxQty || 1, modalState.qty + 1);
     qtyValue.textContent = modalState.qty;
   });
 
