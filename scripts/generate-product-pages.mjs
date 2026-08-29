@@ -251,6 +251,7 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
   <div style="margin-top:14px;font-weight:600;">Total: <span id="cartTotal">₹0</span></div>
 </aside>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/config.js?v=${ASSET_VERSION}"></script>
 <script src="../js/main.js?v=${ASSET_VERSION}"></script>
 </body>
