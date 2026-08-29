@@ -170,6 +170,7 @@ function renderReviewCards() {
           <label>Sizes (comma separated)<input type="text" data-field="sizes" data-idx="${i}" value="${escapeHtml((p.sizes || []).join(', '))}"></label>
           <label>Stock qty<input type="number" data-field="stock_qty" data-idx="${i}" value="${p.stock_qty ?? 10}" min="0" step="1"></label>
         </div>
+        <label>Description<textarea data-field="description" data-idx="${i}" rows="4" style="width:100%;">${escapeHtml(p.description || '')}</textarea></label>
         <label>SEO keywords (comma separated)<input type="text" data-field="seo_keywords" data-idx="${i}" value="${escapeHtml((p.seo_keywords || []).join(', '))}"></label>
         <label>Meta description<input type="text" data-field="meta_description" data-idx="${i}" maxlength="155" value="${escapeHtml(p.meta_description || '')}"></label>
         <button type="button" class="clean-ai-btn" data-idx="${i}" ${p._cleaning ? 'disabled' : ''}>
@@ -189,9 +190,9 @@ function renderReviewCards() {
 }
 
 // Sends one product's raw name/description to admin-clean-product (Gemini)
-// and fills in display title, SEO keywords, and meta description with the
-// result. Admin can still edit anything before uploading — this never
-// writes to the DB itself.
+// and fills in display title, a rewritten description, SEO keywords, and
+// meta description with the result. Admin can still edit anything before
+// uploading — this never writes to the DB itself.
 async function handleCleanWithAI(idx) {
   const product = scannedProducts[idx];
   if (!product) return;
@@ -219,6 +220,7 @@ async function handleCleanWithAI(idx) {
     if (result.error) throw new Error(result.error);
 
     product.name = result.display_title;
+    product.description = result.description;
     product.seo_keywords = result.seo_keywords;
     product.meta_description = result.meta_description;
   } catch (err) {
