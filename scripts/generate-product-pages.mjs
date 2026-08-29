@@ -249,11 +249,44 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
   <h3>Your Bag</h3>
   <div id="cartItems"></div>
   <div style="margin-top:14px;font-weight:600;">Total: <span id="cartTotal">₹0</span></div>
+  <button type="button" id="checkoutBtn" class="btn btn-primary" style="width:100%;margin-top:14px;">GO TO CHECKOUT</button>
 </aside>
 
+<!-- Checkout modal — was missing from this template, which is why Bag
+     had no working checkout and Buy Now silently failed on product
+     pages (checkout.js wasn't loaded either; see script tags below). -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal">
+    <button class="modal-close" id="closeCheckout">×</button>
+    <div class="modal-body">
+      <h2>Checkout</h2>
+      <form class="checkout-form" id="checkoutForm">
+        <label>Full name</label>
+        <input type="text" name="name" required />
+        <label>Email</label>
+        <input type="email" name="email" required />
+        <label>Phone</label>
+        <input type="tel" name="phone" required />
+        <label>Address line</label>
+        <input type="text" name="line1" required />
+        <label>City</label>
+        <input type="text" name="city" required />
+        <label>State</label>
+        <input type="text" name="state" required />
+        <label>Pincode</label>
+        <input type="text" name="pincode" required />
+        <div class="cart-total"><span>Total</span><span id="checkoutTotal">₹0</span></div>
+        <button type="submit" class="btn btn-dark" id="payBtn">PAY WITH CASHFREE</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/config.js?v=${ASSET_VERSION}"></script>
 <script src="../js/main.js?v=${ASSET_VERSION}"></script>
+<script src="../js/checkout.js?v=${ASSET_VERSION}"></script>
 </body>
 </html>
 `;
