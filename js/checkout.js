@@ -1,15 +1,34 @@
 // Requires the Cashfree JS SDK loaded in index.html:
 // <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
-document.getElementById("checkoutBtn").addEventListener("click", () => {
-  if (!Cart.items.length) return;
-  document.getElementById("checkoutTotal").textContent = `₹${Cart.total().toLocaleString("en-IN")}`;
+// When set (by "Buy Now"), checkout uses this single-item line instead of
+// Cart.items, and a successful payment does NOT touch the cart at all —
+// whatever was already in the bag stays untouched.
+let buyNowItem = null;
+
+function openCheckoutModal(total) {
+  document.getElementById("checkoutTotal").textContent = `₹${total.toLocaleString("en-IN")}`;
   toggleCart(false);
   document.getElementById("checkoutModal").classList.add("open");
+}
+
+document.getElementById("checkoutBtn").addEventListener("click", () => {
+  if (!Cart.items.length) return;
+  buyNowItem = null;
+  openCheckoutModal(Cart.total());
 });
+
+// Called from main.js's "BUY NOW" button on a product page/modal. `item`
+// is a single line shaped like a Cart entry:
+// { product_id, name, price, quantity, size, color }.
+window.startBuyNow = function (item) {
+  buyNowItem = item;
+  openCheckoutModal(item.price * item.quantity);
+};
 
 document.getElementById("closeCheckout").addEventListener("click", () => {
   document.getElementById("checkoutModal").classList.remove("open");
+  buyNowItem = null;
 });
 
 document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
@@ -31,6 +50,10 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
     },
   };
 
+  // Buy Now checks out just the one item it was given; a normal checkout
+  // still uses whatever's in the bag.
+  const items = buyNowItem ? [buyNowItem] : Cart.items;
+
   try {
     // 1. Ask our edge function to create a Cashfree order (server-side, trusted prices).
     // Size/color are carried along per line so fulfillment knows what to pack —
@@ -39,7 +62,7 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        items: Cart.items.map((i) => ({
+        items: items.map((i) => ({
           product_id: i.product_id,
           quantity: i.quantity,
           size: i.size || undefined,
@@ -77,8 +100,13 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
     const verifyData = await verifyRes.json();
 
     if (verifyData.ok) {
-      Cart.items = [];
-      Cart.save();
+      // Only clear the bag for a real cart checkout — a Buy Now purchase
+      // never touched Cart.items, so there's nothing to clear there.
+      if (!buyNowItem) {
+        Cart.items = [];
+        Cart.save();
+      }
+      buyNowItem = null;
       document.getElementById("checkoutModal").classList.remove("open");
       alert("Payment successful! Your order is confirmed.");
     } else {
