@@ -4,6 +4,7 @@
 
 const SCRAPE_URL = `${SUPABASE_URL}/functions/v1/scrape-meesho-products`;
 const CLEAN_PRODUCT_URL = `${SUPABASE_URL}/functions/v1/admin-clean-product`;
+const EXTRACT_ATTRS_URL = `${SUPABASE_URL}/functions/v1/admin-extract-attributes`;
 
 let scannedProducts = [];
 
@@ -177,6 +178,10 @@ function renderReviewCards() {
           ${p._cleaning ? '✨ Cleaning…' : '✨ Clean with AI'}
         </button>
         ${p._cleanError ? `<span style="color:#c0392b; font-size:0.8em; margin-left:8px;">${escapeHtml(p._cleanError)}</span>` : ''}
+        <button type="button" class="extract-attrs-btn" data-idx="${i}" ${p._extracting ? 'disabled' : ''}>
+          ${p._extracting ? '🏷️ Extracting…' : '🏷️ Extract sizes/mood'}
+        </button>
+        ${p._extractError ? `<span style="color:#c0392b; font-size:0.8em; margin-left:8px;">${escapeHtml(p._extractError)}</span>` : ''}
       </div>`;
   }).join('');
 
@@ -186,6 +191,9 @@ function renderReviewCards() {
   });
   els.reviewCards.querySelectorAll('.clean-ai-btn').forEach(btn => {
     btn.addEventListener('click', () => handleCleanWithAI(Number(btn.dataset.idx)));
+  });
+  els.reviewCards.querySelectorAll('.extract-attrs-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleExtractAttributes(Number(btn.dataset.idx)));
   });
 }
 
@@ -227,6 +235,49 @@ async function handleCleanWithAI(idx) {
     product._cleanError = err.message;
   } finally {
     product._cleaning = false;
+    renderReviewCards();
+  }
+}
+
+// Sends one product's raw name/description to admin-extract-attributes
+// (Gemini, GEMINI_API_KEY3 — separate quota from admin-clean-product's
+// GEMINI_API_KEY2) and fills in sizes, colors, and mood_tag from whatever
+// the raw text actually states. Only pulls structured facts out of text
+// that's already there — same "never write to DB directly, admin reviews
+// first" pattern as Clean with AI.
+async function handleExtractAttributes(idx) {
+  const product = scannedProducts[idx];
+  if (!product) return;
+
+  product._extracting = true;
+  product._extractError = null;
+  renderReviewCards();
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const res = await fetch(EXTRACT_ATTRS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        products: [{ name: product.name, description: product.description }],
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Extraction failed');
+
+    const result = data.products[0];
+    if (result.error) throw new Error(result.error);
+
+    if (result.sizes?.length) product.sizes = result.sizes;
+    if (result.colors?.length) product.colors = result.colors;
+    if (result.mood_tag) product.mood_tag = result.mood_tag;
+  } catch (err) {
+    product._extractError = err.message;
+  } finally {
+    product._extracting = false;
     renderReviewCards();
   }
 }
