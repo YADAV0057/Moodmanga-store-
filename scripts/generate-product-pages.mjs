@@ -75,7 +75,7 @@ function buildPage(product) {
     category,
   } = product;
 
-  const title = `${name} | MoodManga Store`;
+  const title = `${name} | Mood Store`;
   const metaDesc = meta_description || (description || '').slice(0, 155);
   const keywords = Array.isArray(seo_keywords) ? seo_keywords.join(', ') : '';
   const images = [image_url, ...(gallery_urls || [])].filter(Boolean);
@@ -159,7 +159,8 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
     padding: 14px 20px;
     border-bottom: 1px solid var(--pp-border);
   }
-  .ppage-header .logo { font-size: 1.2rem; text-decoration: underline; color: var(--pp-ink); }
+  .ppage-header .logo { font-size: 1.3rem; text-decoration: none; }
+  .ppage-header .logo.brand-name { color: transparent; }
   .ppage-cart-btn {
     position: relative;
     background: none;
@@ -229,7 +230,7 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
 <body>
 
 <header class="ppage-header site-header">
-  <a href="../index.html" class="logo">MoodManga Store</a>
+  <a href="../index.html" class="logo brand-name">Mood Store</a>
   <button type="button" id="cartToggle" class="ppage-cart-btn">🛍 Bag <span id="cartCount" class="ppage-cart-count">0</span></button>
 </header>
 
