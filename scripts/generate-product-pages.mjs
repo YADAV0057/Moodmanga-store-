@@ -285,6 +285,7 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="../js/config.js?v=${ASSET_VERSION}"></script>
+<script src="../js/track.js?v=${ASSET_VERSION}"></script>  
 <script src="../js/main.js?v=${ASSET_VERSION}"></script>
 <script src="../js/checkout.js?v=${ASSET_VERSION}"></script>
 </body>
