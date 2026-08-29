@@ -131,7 +131,11 @@ async function loadProducts() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    grid.innerHTML = `<div class="empty-state">Couldn't load products. ${error.message}</div>`;
+    // grid is null on static product/<slug>.html pages (no #productGrid
+    // there) — guard so this doesn't throw and silently reject
+    // window.productsReady, which would stop initStaticProductPage()
+    // from ever running.
+    if (grid) grid.innerHTML = `<div class="empty-state">Couldn't load products. ${error.message}</div>`;
     console.error(error);
     return;
   }
@@ -209,6 +213,10 @@ function productCardHTML(p) {
 
 function renderGrid() {
   const grid = document.getElementById("productGrid");
+  // Homepage-only element — static product/<slug>.html pages don't render
+  // a grid, so bail out here instead of throwing on grid.innerHTML below.
+  // (See populateFilterOptions() above for the same pattern/reasoning.)
+  if (!grid) return;
   const list = getFilteredProducts();
 
   if (!PRODUCTS.length) {
@@ -631,5 +639,3 @@ window.productsReady.then(() => {
   const productKey = params.get("product");
   if (productKey) openProductModal(productKey);
 });
-
-
