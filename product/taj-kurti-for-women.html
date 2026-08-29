@@ -106,23 +106,31 @@ XS, S (Bust Size: 36 in, Size Length:">
   }
   .spec-list {
     margin: 0 0 20px;
+    padding-top: 14px;
     border-top: 1px solid var(--pp-border);
   }
-  .spec-row {
-    display: flex;
-    gap: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid var(--pp-border);
+  .spec-list p {
+    margin: 0 0 8px;
     font-size: 0.95rem;
+    line-height: 1.5;
   }
-  .spec-row dt {
-    flex: 0 0 42%;
+  .spec-line strong {
+    color: var(--pp-ink);
+  }
+  .spec-header {
+    margin-top: 14px !important;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: var(--pp-muted);
-    font-weight: 600;
   }
-  .spec-row dd {
-    margin: 0;
-    flex: 1;
+  .spec-sub {
+    margin-left: 14px !important;
+    color: #4a4038;
+  }
+  .spec-sub::before {
+    content: "– ";
+    color: var(--pp-muted);
   }
   .pp-cta {
     display: block;
@@ -172,7 +180,19 @@ XS, S (Bust Size: 36 in, Size Length:">
     <p class="pp-price">₹400 <s>₹600</s></p>
     <p class="pp-stock">In stock</p>
 
-    <p>Name: taj kurti for women<br>Fabric: Rayon<br>Sleeve Length: Three-Quarter Sleeves<br>Pattern: Printed<br>Combo of: Single<br>Sizes:<br>XS, S (Bust Size: 36 in, Size Length: 45 in) <br>M (Bust Size: 38 in, Size Length: 48 in) <br>XL (Bust Size: 42 in, Size Length: 48 in) <br>XXL (Bust Size: 44 in, Size Length: 45 in) <br>XXXL (Bust Size: 46 in, Size Length: 45 in) <br>4XL, 5XL<br>Country of Origin: India</p>
+    <div class="spec-list"><p class="spec-line"><strong>Name:</strong> taj kurti for women</p>
+<p class="spec-line"><strong>Fabric:</strong> Rayon</p>
+<p class="spec-line"><strong>Sleeve Length:</strong> Three-Quarter Sleeves</p>
+<p class="spec-line"><strong>Pattern:</strong> Printed</p>
+<p class="spec-line"><strong>Combo of:</strong> Single</p>
+<p class="spec-header"><strong>Sizes:</strong></p>
+<p class="spec-sub">XS, S (Bust Size: 36 in, Size Length: 45 in)</p>
+<p class="spec-sub">M (Bust Size: 38 in, Size Length: 48 in)</p>
+<p class="spec-sub">XL (Bust Size: 42 in, Size Length: 48 in)</p>
+<p class="spec-sub">XXL (Bust Size: 44 in, Size Length: 45 in)</p>
+<p class="spec-sub">XXXL (Bust Size: 46 in, Size Length: 45 in)</p>
+<p class="spec-sub">4XL, 5XL</p>
+<p class="spec-line"><strong>Country of Origin:</strong> India</p></div>
 
     <a href="../index.html?product=taj-kurti-for-women" class="pp-cta">View in store / Add to cart</a>
     <a href="../index.html" class="pp-back">&larr; Back to all products</a>
