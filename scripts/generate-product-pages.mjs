@@ -7,13 +7,18 @@
 // schema.org Product JSON-LD, and redirects/links back to the storefront
 // so the modal-based quick-view/add-to-cart flow still works.
 
-import { writeFile, mkdir } from 'node:fs/promises'; 
+import { writeFile, mkdir, readdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 const SITE_URL = process.env.SITE_URL || 'https://yadav0057.github.io/Moodmanga-store-';
 const OUTPUT_DIR = path.join(process.cwd(), 'product');
+// Busts the browser cache for css/style.css and js/main.js on every
+// regeneration — otherwise browsers (mobile ones especially) can keep
+// serving a stale main.js indefinitely after a fix ships, since the
+// filename never changes.
+const ASSET_VERSION = Date.now();
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY env vars.');
@@ -75,7 +80,7 @@ function buildPage(product) {
     category,
   } = product;
 
-  const title = `${name} | Mood Store`;
+  const title = `${name} | MoodManga Store`;
   const metaDesc = meta_description || (description || '').slice(0, 155);
   const keywords = Array.isArray(seo_keywords) ? seo_keywords.join(', ') : '';
   const images = [image_url, ...(gallery_urls || [])].filter(Boolean);
@@ -131,7 +136,7 @@ ${keywords ? `<meta name="keywords" content="${escapeHtml(keywords)}">` : ''}
 ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : ''}
 <meta property="og:url" content="${canonicalUrl}">
 
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/style.css?v=${ASSET_VERSION}">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 
 <!-- This page IS the storefront's single ordering surface for this
@@ -159,8 +164,7 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
     padding: 14px 20px;
     border-bottom: 1px solid var(--pp-border);
   }
-  .ppage-header .logo { font-size: 1.3rem; text-decoration: none; }
-  .ppage-header .logo.brand-name { color: transparent; }
+  .ppage-header .logo { font-size: 1.2rem; text-decoration: underline; color: var(--pp-ink); }
   .ppage-cart-btn {
     position: relative;
     background: none;
@@ -230,7 +234,7 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
 <body>
 
 <header class="ppage-header site-header">
-  <a href="../index.html" class="logo brand-name">Mood Store</a>
+  <a href="../index.html" class="logo">MoodManga Store</a>
   <button type="button" id="cartToggle" class="ppage-cart-btn">🛍 Bag <span id="cartCount" class="ppage-cart-count">0</span></button>
 </header>
 
@@ -247,8 +251,8 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
   <div style="margin-top:14px;font-weight:600;">Total: <span id="cartTotal">₹0</span></div>
 </aside>
 
-<script src="../js/config.js"></script>
-<script src="../js/main.js"></script>
+<script src="../js/config.js?v=${ASSET_VERSION}"></script>
+<script src="../js/main.js?v=${ASSET_VERSION}"></script>
 </body>
 </html>
 `;
@@ -273,17 +277,31 @@ async function main() {
   await mkdir(OUTPUT_DIR, { recursive: true });
 
   const sitemapUrls = [];
+  const currentSlugs = new Set();
 
   for (const product of products) {
     if (!product.slug) {
       console.warn(`Skipping product ${product.id} — no slug.`);
       continue;
     }
+    currentSlugs.add(`${product.slug}.html`);
     const html = buildPage(product);
     const filePath = path.join(OUTPUT_DIR, `${product.slug}.html`);
     await writeFile(filePath, html, 'utf8');
     sitemapUrls.push(`${SITE_URL}/product/${product.slug}.html`);
     console.log(`Generated product/${product.slug}.html`);
+  }
+
+  // Remove stale pages for products that were deleted or deactivated
+  // since the last run — otherwise a removed product's page (with
+  // whatever template was current when it was last built) stays live
+  // and indexable forever.
+  const existingFiles = await readdir(OUTPUT_DIR);
+  for (const file of existingFiles) {
+    if (!file.endsWith('.html')) continue;
+    if (currentSlugs.has(file)) continue;
+    await rm(path.join(OUTPUT_DIR, file));
+    console.log(`Removed stale product/${file} (no longer an active product).`);
   }
 
   // Minimal sitemap covering only product pages; merge with your main
