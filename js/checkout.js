@@ -69,6 +69,7 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
           color: i.color || undefined,
         })),
         customer,
+        affiliate_ref: window.getAffiliateRef ? window.getAffiliateRef() : undefined,
       }),
     });
     const orderData = await res.json();
