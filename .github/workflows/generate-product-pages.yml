@@ -37,5 +37,26 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add product/ sitemap-products.xml
-          git diff --cached --quiet || git commit -m "chore: regenerate product pages [skip ci]"
-          git push
+          git diff --cached --quiet && echo "No changes to commit." && exit 0
+
+          git commit -m "chore: regenerate product pages [skip ci]"
+
+          # Someone (or another run) may have pushed to main while this job
+          # was generating pages. Rebase our commit on top of the latest
+          # main before pushing, retrying a few times in case of races.
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            if git rebase origin/main; then
+              if git push origin HEAD:main; then
+                echo "Pushed successfully."
+                exit 0
+              fi
+            else
+              git rebase --abort
+            fi
+            echo "Push attempt $i failed, retrying..."
+            sleep $((i * 5))
+          done
+
+          echo "Failed to push after retries."
+          exit 1
