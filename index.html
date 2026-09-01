@@ -3,14 +3,63 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mood Store — Apparel by Mood</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<title>Mood Store — Rajasthani & Everyday Fashion for Indian Women</title>
+<meta name="description" content="Bandhani, block print, jutti, and everyday fashion for Indian women. Shop Rajasthani ethnic wear and daily styles, made in Jaipur. Free shipping over ₹999, COD available." />
+<link rel="canonical" href="https://moodmanga.in/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Mood Store" />
+<meta property="og:title" content="Mood Store — Rajasthani & Everyday Fashion for Indian Women" />
+<meta property="og:description" content="Bandhani, block print, jutti, and everyday fashion for Indian women. Shop Rajasthani ethnic wear and daily styles, made in Jaipur." />
+<meta property="og:url" content="https://moodmanga.in/" />
+<meta property="og:image" content="https://moodmanga.in/logo-mark.svg" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Mood Store — Rajasthani & Everyday Fashion for Indian Women" />
+<meta name="twitter:description" content="Bandhani, block print, jutti, and everyday fashion for Indian women. Made in Jaipur." />
+<meta name="twitter:image" content="https://moodmanga.in/logo-mark.svg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Inter:wght@400;500;600;700&display=swap" />
+
 <link rel="stylesheet" href="css/style.css?v=3" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Mood Store",
+  "url": "https://moodmanga.in/",
+  "logo": "https://moodmanga.in/logo-mark.svg",
+  "email": "support@moodstore.in",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Jaipur",
+    "addressCountry": "IN"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Mood Store",
+  "url": "https://moodmanga.in/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://moodmanga.in/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 </head>
 <body>
 
 <header class="site-header">
   <a href="index.html" class="brand">
-    <span class="seal">M</span> <span class="brand-name">Mood Store</span>
+    <img src="logo-mark.svg" alt="Mood Store" class="seal" width="30" height="30" /> <span class="brand-name">Mood Store</span>
   </a>
   <div class="header-actions">
     <button class="icon-btn" id="wishlistToggle" title="Wishlist">
@@ -24,9 +73,16 @@
 
 <section class="hero">
   <div class="eyebrow">Drop 04 / New Arrivals</div>
-  <h1>Clothes for<br>every arc.</h1>
-  <p>Everyday fits and statement pieces, sorted by mood, not by season. Free shipping over ₹999.</p>
+  <h1>Carry Rajasthan<br>with you.</h1>
+  <p>Bandhani, block print, and everyday wear — for every Indian woman who carries home in her wardrobe. Free shipping over ₹999.</p>
 </section>
+
+<ul class="trust-bar">
+  <li>🚚 Free shipping over ₹999</li>
+  <li>💵 Cash on delivery available</li>
+  <li>↩️ 7-day easy returns</li>
+  <li>📍 Made in Jaipur</li>
+</ul>
 
 <div class="toolbar">
   <input type="search" id="searchInput" class="search-input" placeholder="Search pieces…" />
@@ -53,7 +109,12 @@
 </main>
 
 <footer>
-  MOOD STORE — JAIPUR, INDIA · SUPPORT@MOODSTORE.IN
+  <div class="footer-trust">
+    <span>🔒 Secure checkout via Cashfree</span>
+    <span>💵 COD available</span>
+    <span>↩️ 7-day returns</span>
+  </div>
+  <div class="footer-base">MOOD STORE — JAIPUR, INDIA · SUPPORT@MOODSTORE.IN</div>
 </footer>
 
 <!-- Product detail modal -->
