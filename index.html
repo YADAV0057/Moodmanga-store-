@@ -24,6 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Inter:wght@400;500;600;700&display=swap" />
 
+<link rel="preload" as="image" href="img/hero/hero-amber-fort.jpg" />
 <link rel="stylesheet" href="css/style.css?v=3" />
 
 <script type="application/ld+json">
@@ -72,9 +73,24 @@
 </header>
 
 <section class="hero">
-  <div class="eyebrow">Drop 04 / New Arrivals</div>
-  <h1>Carry Rajasthan<br>with you.</h1>
-  <p>Bandhani, block print, and everyday wear — for every Indian woman who carries home in her wardrobe. Free shipping over ₹999.</p>
+  <!-- Rotating background — real photos (Rock's uploads, resized + compressed
+       for web). Blurred via CSS (see .hero-bg-slide) so the imagery reads as
+       texture/mood behind the product-focused content, not competing detail. -->
+  <div class="hero-bg" id="heroBg">
+    <div class="hero-bg-slide active" style="background-image:url('img/hero/hero-amber-fort.jpg')" data-caption="Amber Fort, Jaipur"></div>
+    <div class="hero-bg-slide" style="background-image:url('img/hero/hero-palace-archway.jpg')" data-caption="Patrika Gate archway"></div>
+    <div class="hero-bg-slide" style="background-image:url('img/hero/hero-thar-desert.jpg')" data-caption="Thar desert at dusk"></div>
+    <div class="hero-bg-slide" style="background-image:url('img/hero/hero-hawa-mahal.jpg')" data-caption="Hawa Mahal, Jaipur"></div>
+    <div class="hero-bg-slide" style="background-image:url('img/hero/hero-camel-caravan.jpg')" data-caption="Camel caravan at sunset"></div>
+    <div class="hero-bg-slide" style="background-image:url('img/hero/hero-jaisalmer-fort.jpg')" data-caption="Jaisalmer Fort at golden hour"></div>
+  </div>
+  <div class="hero-scrim"></div>
+
+  <div class="content-wrap">
+    <div class="eyebrow">Drop 04 / New Arrivals</div>
+    <h1>Carry Rajasthan<br>with you.</h1>
+    <p>Bandhani, block print, and everyday wear — for every Indian woman who carries home in her wardrobe. Free shipping over ₹999.</p>
+  </div>
 </section>
 
 <ul class="trust-bar">
@@ -111,7 +127,7 @@
 <footer>
   <div class="footer-trust">
     <span>🔒 Secure checkout via Cashfree</span>
-    <span>💵 COD available</span>
+    
     <span>↩️ 7-day returns</span>
   </div>
   <div class="footer-base">MOOD STORE — JAIPUR, INDIA · SUPPORT@MOODSTORE.IN</div>
@@ -198,6 +214,22 @@
 </div>
 
 
+<script>
+  // Hero background carousel: crossfades .hero-bg-slide elements every 6s.
+  // Pauses on prefers-reduced-motion (leaves the first slide showing).
+  (function () {
+    var slides = document.querySelectorAll('#heroBg .hero-bg-slide');
+    if (slides.length < 2) return;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return;
+    var current = 0;
+    setInterval(function () {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 6000);
+  })();
+</script>
   <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js?v=3"></script>
