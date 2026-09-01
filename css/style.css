@@ -1,5 +1,5 @@
 /* ============================================================
-   Mood Store — design tokens (Rajasthan identity, v3)
+   Mood Store — design tokens (Rajasthan identity, v5)
    Palette: desert ivory canvas, henna-ink text, Jaipur pink
             (primary CTA), Jodhpur blue (links/secondary),
             royal maroon (premium/bestseller), Jaisalmer gold
@@ -41,12 +41,53 @@ html { scroll-behavior: smooth; }
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
 
+/* ========== FULL PAGE BACKGROUND WITH ROTATING RAJASTHANI IMAGES ========== */
 body {
   margin: 0;
-  background: var(--canvas);
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.5;
+  position: relative;
+  background: var(--canvas);
+}
+
+/* Background image container — fixed behind all content */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  opacity: 0.15;
+  animation: slideBg 36s infinite ease-in-out;
+}
+
+@keyframes slideBg {
+  0% { background-image: url('hero-amber-fort.jpg'); }
+  14% { background-image: url('hero-amber-fort.jpg'); }
+  16% { background-image: url('hero-palace-archway.jpg'); opacity: 0; }
+  30% { background-image: url('hero-palace-archway.jpg'); opacity: 0.15; }
+  32% { background-image: url('hero-palace-archway.jpg'); }
+  46% { background-image: url('hero-palace-archway.jpg'); }
+  48% { background-image: url('hero-thar-desert.jpg'); opacity: 0; }
+  62% { background-image: url('hero-thar-desert.jpg'); opacity: 0.15; }
+  64% { background-image: url('hero-thar-desert.jpg'); }
+  78% { background-image: url('hero-thar-desert.jpg'); }
+  80% { background-image: url('hero-amber-fort.jpg'); opacity: 0; }
+  94% { background-image: url('hero-amber-fort.jpg'); opacity: 0.15; }
+  100% { background-image: url('hero-amber-fort.jpg'); }
+}
+
+/* Content overlay scrim for readability */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -9;
+  background: linear-gradient(180deg, rgba(251,241,228,0.92) 0%, rgba(251,241,228,0.88) 50%, rgba(251,241,228,0.92) 100%);
+  pointer-events: none;
 }
 
 a { color: inherit; }
@@ -103,7 +144,8 @@ textarea:focus-visible {
   align-items: center;
   justify-content: space-between;
   padding: 18px 28px;
-  background: var(--canvas);
+  background: rgba(251, 241, 228, 0.98);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -251,9 +293,10 @@ textarea:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-bg-slide { transition: opacity 0.3s ease; }
+  body::before { animation: none; }
 }
 
-/* ---------- Panel grid (garment rack layout) — UPDATED FOR TALLER CARDS ----------
+/* ---------- Panel grid (garment rack layout) ----------
    Tall portrait slots for clothing photography; a few wide slots
    break the rhythm, like a rack with the odd folded piece on top. */
 .panel-grid {
@@ -262,6 +305,8 @@ textarea:focus-visible {
   grid-auto-rows: 520px;
   gap: 16px;
   padding: 0 28px 80px;
+  position: relative;
+  z-index: 1;
 }
 
 .product-card {
@@ -298,8 +343,8 @@ textarea:focus-visible {
   background: var(--line);
 }
 
-.product-card:nth-child(5n+1) { grid-row: span 1; /* Changed from span 2 */ }
-.product-card:nth-child(7n+4) { grid-column: span 1; /* Changed from span 2 */ }
+.product-card:nth-child(5n+1) { grid-row: span 1; }
+.product-card:nth-child(7n+4) { grid-column: span 1; }
 
 .product-card:hover {
   transform: rotate(-0.5deg) translateY(-2px);
@@ -534,6 +579,8 @@ footer {
   font-size: 12px;
   color: rgba(43, 27, 18, 0.55);
   border-top: 1px solid var(--line);
+  position: relative;
+  z-index: 1;
 }
 
 .footer-trust {
@@ -564,6 +611,8 @@ footer {
   font-size: 12px;
   color: rgba(43, 27, 18, 0.7);
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 /* ---------- Icon button (wishlist) ---------- */
@@ -586,6 +635,8 @@ footer {
   flex-wrap: wrap;
   gap: 10px;
   padding: 20px 28px 0;
+  position: relative;
+  z-index: 1;
 }
 
 .search-input,
