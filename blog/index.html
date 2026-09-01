@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+<title>Mood Store Journal — Rajasthani Style, Craft & Everyday Fashion</title>
+<meta name="description" content="Styling guides, craft stories, and everyday fashion inspiration from Mood Store — bandhani, block print, jutti, and Rajasthani-influenced dressing for Indian women." />
+<link rel="canonical" href="https://moodmanga.in/blog/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Mood Store" />
+<meta property="og:title" content="Mood Store Journal — Rajasthani Style, Craft & Everyday Fashion" />
+<meta property="og:description" content="Styling guides, craft stories, and everyday fashion inspiration from Mood Store." />
+<meta property="og:url" content="https://moodmanga.in/blog/" />
+<meta property="og:image" content="https://moodmanga.in/logo-mark.svg" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Mood Store Journal" />
+<meta name="twitter:description" content="Styling guides, craft stories, and everyday fashion inspiration from Mood Store." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Inter:wght@400;500;600;700&display=swap" />
+
+<link rel="stylesheet" href="../css/style.css?v=3" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "Mood Store Journal",
+  "url": "https://moodmanga.in/blog/",
+  "publisher": { "@type": "Organization", "name": "Mood Store", "logo": "https://moodmanga.in/logo-mark.svg" }
+}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+  {"@type":"ListItem","position":1,"name":"Home","item":"https://moodmanga.in/index.html"},
+  {"@type":"ListItem","position":2,"name":"Journal","item":"https://moodmanga.in/blog/"}
+]}
+</script>
+
+<style>
+  /* ---- Blog-only layout additions, built on top of the site's existing
+     tokens/classes in css/style.css. Nothing here redefines brand colors
+     or fonts — it only adds the article-grid layout this page needs. ---- */
+  .blog-hero { padding: 56px 28px 32px; text-align: center; }
+  .blog-hero .eyebrow { font-family: var(--font-label); letter-spacing: 1px; text-transform: uppercase; font-size: 12px; color: var(--jaipuri); margin-bottom: 10px; }
+  .blog-hero h1 { font-family: var(--font-display); font-style: italic; font-weight: 600; font-size: clamp(32px, 5vw, 48px); margin: 0 0 12px; color: var(--ink); }
+  .blog-hero p { max-width: 520px; margin: 0 auto; color: rgba(43,27,18,0.7); font-size: 15px; line-height: 1.5; }
+
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+    padding: 0 28px 64px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--line);
+    background: var(--canvas);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .article-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(43,27,18,0.08); }
+  .article-card .article-thumb {
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(135deg, var(--haveli) 0%, var(--dune) 100%);
+  }
+  .article-card .article-body { padding: 18px 18px 22px; }
+  .article-card .article-tag { font-family: var(--font-label); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--rani); margin-bottom: 8px; display: block; }
+  .article-card h2 { font-family: var(--font-display); font-style: italic; font-weight: 600; font-size: 19px; margin: 0 0 8px; line-height: 1.3; }
+  .article-card p { font-size: 13px; color: rgba(43,27,18,0.65); line-height: 1.5; margin: 0 0 10px; }
+  .article-card .article-meta { font-family: var(--font-label); font-size: 11px; color: rgba(43,27,18,0.5); }
+
+  @media (max-width: 600px) {
+    .blog-hero { padding: 36px 16px 24px; }
+    .article-grid { padding: 0 16px 48px; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="../index.html" class="brand">
+    <img src="../logo-mark.svg" alt="Mood Store" class="seal" width="30" height="30" /> <span class="brand-name">Mood Store</span>
+  </a>
+  <div class="header-actions">
+    <a href="../index.html" class="icon-btn" style="text-decoration:none;">Shop</a>
+  </div>
+</header>
+
+<section class="blog-hero">
+  <div class="eyebrow">The Journal</div>
+  <h1>Stories woven into style.</h1>
+  <p>Styling guides, craft notes, and everyday fashion inspiration — from bandhani and block print to how Rajasthan shows up in a daily wardrobe.</p>
+</section>
+
+<div class="stitch-divider"></div>
+
+<!-- ============================================================
+     POST LIST — this section is what your LLM automation should
+     populate. Each post is one <a class="article-card"> block.
+     Copy the commented template below per post, fill in the
+     fields, and drop it above the <!-- EMPTY STATE --> line.
+     Remove the empty-state block once at least one real post exists.
+
+     <a class="article-card" href="./POST-SLUG.html">
+       <div class="article-thumb"></div>  (swap for <img> once you have real photography)
+       <div class="article-body">
+         <span class="article-tag">CATEGORY</span>
+         <h2>Post Title</h2>
+         <p>One to two sentence excerpt/summary.</p>
+         <span class="article-meta">Month DD, YYYY · N min read</span>
+       </div>
+     </a>
+     ============================================================ -->
+<div class="article-grid" id="articleGrid">
+  <!-- EMPTY STATE: remove this div once real posts are added above -->
+  <div class="empty-state" style="grid-column: 1 / -1;">
+    New stories are on the way. Check back soon.
+  </div>
+</div>
+
+<footer>
+  <div class="footer-trust">
+    <span>🔒 Secure checkout via Cashfree</span>
+    <span>💵 COD available</span>
+    <span>↩️ 7-day returns</span>
+  </div>
+  <div class="footer-base">MOOD STORE — JAIPUR, INDIA · SUPPORT@MOODSTORE.IN</div>
+</footer>
+
+</body>
+</html>
