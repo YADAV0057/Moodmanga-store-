@@ -1,0 +1,35 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mood Store kairi mark">
+  <defs>
+    <linearGradient id="kairiGradient" x1="20" y1="10" x2="100" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1B5468"/>
+      <stop offset="100%" stop-color="#C93F6E"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Kairi (mango-leaf / paisley) outline, drawn as clean line art -->
+  <path
+    d="M60 12
+       C 82 12, 96 28, 96 50
+       C 96 68, 86 78, 74 86
+       C 66 91, 62 97, 66 104
+       C 68 107.5, 65 111, 61 110
+       C 48 107, 40 96, 40 84
+       C 40 70, 50 63, 58 55
+       C 66 47, 68 36, 60 28
+       C 52 20, 38 22, 30 32
+       C 20 44, 22 62, 34 72
+       C 36 74, 35 77, 32 77.5
+       C 16 79, 4 64, 6 46
+       C 8 26, 26 12, 46 12
+       Z"
+    stroke="url(#kairiGradient)"
+    stroke-width="3.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+
+  <!-- Mirror-work dot accents -->
+  <circle cx="70" cy="40" r="3.4" fill="#D9A857"/>
+  <circle cx="52" cy="70" r="3.4" fill="#D9A857"/>
+</svg>
