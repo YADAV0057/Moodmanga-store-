@@ -10,6 +10,7 @@ function openCheckoutModal(total) {
   document.getElementById("checkoutTotal").textContent = `₹${total.toLocaleString("en-IN")}`;
   toggleCart(false);
   document.getElementById("checkoutModal").classList.add("open");
+  resetAddressConfirmation();
 }
 
 document.getElementById("checkoutBtn").addEventListener("click", () => {
@@ -31,8 +32,85 @@ document.getElementById("closeCheckout").addEventListener("click", () => {
   buyNowItem = null;
 });
 
+// ========== Address Validation & Confirmation ==========
+function resetAddressConfirmation() {
+  document.getElementById("addressConfirmed").textContent = "";
+  document.getElementById("payBtn").disabled = false;
+}
+
+document.getElementById("confirmAddressBtn").addEventListener("click", async () => {
+  const form = document.getElementById("checkoutForm");
+  const name = form.querySelector("input[name='name']").value.trim();
+  const phone = form.querySelector("input[name='phone']").value.trim();
+  const email = form.querySelector("input[name='email']").value.trim();
+  const line1 = form.querySelector("input[name='line1']").value.trim();
+  const city = form.querySelector("input[name='city']").value.trim();
+  const state = form.querySelector("input[name='state']").value.trim();
+  const pincode = form.querySelector("input[name='pincode']").value.trim();
+
+  // Validate required fields
+  if (!name || !phone || !email || !line1 || !city || !state || !pincode) {
+    alert("Please fill in all address fields before confirming.");
+    return;
+  }
+
+  // Validate phone format (Indian 10-digit)
+  const phoneRegex = /^[6-9]\d{9}$/;
+  if (!phoneRegex.test(phone)) {
+    alert("Please enter a valid 10-digit Indian phone number (starting with 6-9).");
+    return;
+  }
+
+  // Validate email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  // Validate pincode (6 digits for India)
+  const pincodeRegex = /^\d{6}$/;
+  if (!pincodeRegex.test(pincode)) {
+    alert("Please enter a valid 6-digit pincode.");
+    return;
+  }
+
+  // Display confirmation
+  const confirmBox = document.getElementById("addressConfirmed");
+  const addressSummary = `
+    <strong>✓ Address Confirmed</strong><br>
+    ${name}<br>
+    ${phone} · ${email}<br>
+    ${line1}<br>
+    ${city}, ${state} ${pincode}
+  `;
+  confirmBox.innerHTML = addressSummary;
+  confirmBox.style.display = "block";
+
+  // Allow payment to proceed
+  document.getElementById("payBtn").disabled = false;
+};
+
+// Auto-format phone number input
+document.querySelector("input[name='phone']")?.addEventListener("input", (e) => {
+  e.target.value = e.target.value.replace(/\D/g, "").slice(0, 10);
+});
+
+// Auto-format pincode input
+document.querySelector("input[name='pincode']")?.addEventListener("input", (e) => {
+  e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6);
+});
+
 document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  // Verify address was confirmed
+  const confirmBox = document.getElementById("addressConfirmed");
+  if (!confirmBox || !confirmBox.textContent.includes("✓")) {
+    alert("Please confirm your address before proceeding to payment.");
+    return;
+  }
+
   const payBtn = document.getElementById("payBtn");
   payBtn.disabled = true;
   payBtn.textContent = "PROCESSING…";
@@ -109,7 +187,7 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
       }
       buyNowItem = null;
       document.getElementById("checkoutModal").classList.remove("open");
-      alert("Payment successful! Your order is confirmed.");
+      alert("Payment successful! Your order is confirmed. Order ID: " + orderData.cashfree_order_id);
     } else {
       alert(
         "We couldn't confirm your payment yet. If money was deducted, contact support with this order ID: " +
