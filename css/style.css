@@ -1,19 +1,7 @@
 /* ============================================================
-   Mood Store — design tokens (Rajasthan identity, v5)
-   Palette: desert ivory canvas, henna-ink text, Jaipur pink
-            (primary CTA), Jodhpur blue (links/secondary),
-            royal maroon (premium/bestseller), Jaisalmer gold
-            (accents) — abstracted Rajasthan references, kept
-            restrained/premium rather than costume-literal.
-   Type: Fraunces italic display + Inter body/UI. Space Mono
-         dropped — mono read as "tech," not fashion; replaced
-         with tracked small-caps-style Inter for tags/labels.
-   Motif: jharokha (haveli/fort arched window) used sparingly
-          on featured cards and section dividers.
+   Mood Store — design tokens (Rajasthan identity, v6)
+   Enhanced Product Card Design with Taller Display
    ============================================================ */
-
-/* Font loading moved to index.html <head> (preconnect + <link>) for
-   performance — @import here would block first paint an extra round-trip. */
 
 :root {
   --ink: #2b1b12;
@@ -60,7 +48,7 @@ body::before {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  opacity: 0.15;
+  opacity: 0.12;
   animation: slideBg 36s infinite ease-in-out;
 }
 
@@ -68,15 +56,15 @@ body::before {
   0% { background-image: url('hero-amber-fort.jpg'); }
   14% { background-image: url('hero-amber-fort.jpg'); }
   16% { background-image: url('hero-palace-archway.jpg'); opacity: 0; }
-  30% { background-image: url('hero-palace-archway.jpg'); opacity: 0.15; }
+  30% { background-image: url('hero-palace-archway.jpg'); opacity: 0.12; }
   32% { background-image: url('hero-palace-archway.jpg'); }
   46% { background-image: url('hero-palace-archway.jpg'); }
   48% { background-image: url('hero-thar-desert.jpg'); opacity: 0; }
-  62% { background-image: url('hero-thar-desert.jpg'); opacity: 0.15; }
+  62% { background-image: url('hero-thar-desert.jpg'); opacity: 0.12; }
   64% { background-image: url('hero-thar-desert.jpg'); }
   78% { background-image: url('hero-thar-desert.jpg'); }
   80% { background-image: url('hero-amber-fort.jpg'); opacity: 0; }
-  94% { background-image: url('hero-amber-fort.jpg'); opacity: 0.15; }
+  94% { background-image: url('hero-amber-fort.jpg'); opacity: 0.12; }
   100% { background-image: url('hero-amber-fort.jpg'); }
 }
 
@@ -86,7 +74,7 @@ body::after {
   position: fixed;
   inset: 0;
   z-index: -9;
-  background: linear-gradient(180deg, rgba(251,241,228,0.92) 0%, rgba(251,241,228,0.88) 50%, rgba(251,241,228,0.92) 100%);
+  background: linear-gradient(180deg, rgba(251,241,228,0.94) 0%, rgba(251,241,228,0.90) 50%, rgba(251,241,228,0.94) 100%);
   pointer-events: none;
 }
 
@@ -103,11 +91,7 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* ---------- Jharokha divider (signature motif) ----------
-   A repeating row of small arched-window silhouettes — echoes the
-   haveli/fort balcony window used sparingly across the site as the
-   one shape that carries the "forts & temples" identity, replacing
-   the old plain stitch-seam rule. */
+/* ---------- Jharokha divider (signature motif) ---------- */
 .stitch-divider {
   height: 18px;
   background-image:
@@ -119,8 +103,6 @@ textarea:focus-visible {
   opacity: 0.9;
 }
 
-/* Jharokha arch accent on featured/premium cards — one small arch
-   at the top edge, not a full ornamental border. */
 .product-card.featured::before,
 .related-strip .featured::before {
   content: "";
@@ -167,11 +149,6 @@ textarea:focus-visible {
   transition: transform 0.2s ease;
 }
 
-/* ---------- Wordmark ----------
-   The name is short, so it carries the brand alone: an italic display
-   serif with a warm jaipuri-to-rani gradient fill (rather than flat
-   ink) gives it some life, and a light lift on hover keeps it feeling
-   like an interactive mark rather than static label text. */
 .brand-name {
   font-family: var(--font-display);
   font-style: italic;
@@ -232,15 +209,12 @@ textarea:focus-visible {
   isolation: isolate;
 }
 
-/* Rotating background: stack of full-bleed slides, crossfaded via JS
-   toggling .active. Swap each background-image URL for a real, licensed
-   photo (Unsplash/Pexels are free for commercial use, or your own
-   photography) — see the HTML comment above .hero-bg for the theme list. */
 .hero-bg {
   position: absolute;
   inset: 0;
   z-index: -2;
 }
+
 .hero-bg-slide {
   position: absolute;
   inset: 0;
@@ -249,12 +223,11 @@ textarea:focus-visible {
   opacity: 0;
   transition: opacity 1.8s ease;
   filter: blur(2px);
-  transform: scale(1.06); /* hides the soft edge the blur creates */
+  transform: scale(1.06);
 }
+
 .hero-bg-slide.active { opacity: 1; }
 
-/* Scrim so text stays readable over any photo, in the brand's ink tone
-   rather than plain black, to stay on-palette. */
 .hero-scrim {
   position: absolute;
   inset: 0;
@@ -296,14 +269,12 @@ textarea:focus-visible {
   body::before { animation: none; }
 }
 
-/* ---------- Panel grid (garment rack layout) ----------
-   Tall portrait slots for clothing photography; a few wide slots
-   break the rhythm, like a rack with the odd folded piece on top. */
+/* ===== ENHANCED PRODUCT CARD GRID — TALLER PORTRAIT FORMAT ===== */
 .panel-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 520px;
-  gap: 16px;
+  grid-auto-rows: 680px;
+  gap: 20px;
   padding: 0 28px 80px;
   position: relative;
   z-index: 1;
@@ -313,45 +284,25 @@ textarea:focus-visible {
   grid-column: span 1;
   grid-row: span 1;
   position: relative;
-  background: var(--canvas-dim);
+  background: var(--canvas);
   border: 1px solid var(--line);
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   display: flex;
   flex-direction: column;
-  /* product-card is now an <a> tag linking to product/<slug>.html */
   text-decoration: none;
   color: inherit;
+  box-shadow: 0 2px 8px rgba(43, 27, 18, 0.06);
 }
-
-.quick-view-btn {
-  margin-top: 8px;
-  align-self: flex-start;
-  background: transparent;
-  border: 1px solid var(--line);
-  color: inherit;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.quick-view-btn:hover {
-  background: var(--line);
-}
-
-.product-card:nth-child(5n+1) { grid-row: span 1; }
-.product-card:nth-child(7n+4) { grid-column: span 1; }
 
 .product-card:hover {
-  transform: rotate(-0.5deg) translateY(-2px);
-  box-shadow: 6px 6px 0 var(--ink);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(43, 27, 18, 0.12);
   z-index: 2;
 }
 
+/* Product image section — larger, cleaner */
 .product-card .img-wrap {
   flex: 1;
   background: linear-gradient(160deg, var(--dune-soft), var(--haveli));
@@ -363,56 +314,124 @@ textarea:focus-visible {
   font-size: 12px;
   letter-spacing: 1px;
   overflow: hidden;
+  position: relative;
+  min-height: 420px;
 }
 
-.product-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-
-/* Badge styled like a punched hangtag: mono label + a grommet dot */
-.product-card .badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--haveli);
-  color: var(--canvas);
-  font-family: var(--font-label);
-  font-size: 10px;
-  padding: 3px 8px 3px 6px;
-  transform: rotate(-4deg);
-  letter-spacing: 0.5px;
+.product-card .img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
-.product-card .badge::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--canvas);
-  flex-shrink: 0;
-}
-
+/* Product info section — cleaner layout */
 .product-card .info {
-  padding: 12px 14px;
+  padding: 20px;
   background: var(--canvas);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .product-card .name {
   font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 4px;
+  font-size: 16px;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--ink);
 }
 
 .product-card .price {
   font-family: var(--font-label);
-  font-size: 13px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--rani);
+  margin: 4px 0;
+}
+
+.quick-view-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: 2px solid var(--jaipuri);
   color: var(--jaipuri);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 8px;
+}
+
+.quick-view-btn:hover {
+  background: var(--jaipuri);
+  color: var(--canvas);
+}
+
+/* Badge styling */
+.product-card .badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(122, 31, 43, 0.9);
+  color: var(--canvas);
+  font-family: var(--font-label);
+  font-size: 10px;
+  padding: 4px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+.product-card .badge::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--dune);
+  flex-shrink: 0;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 1200px) {
+  .panel-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 660px;
+  }
 }
 
 @media (max-width: 900px) {
-  .panel-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 480px; }
-  .product-card { grid-column: span 1 !important; grid-row: span 1 !important; }
+  .panel-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 640px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .panel-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 700px;
+    gap: 14px;
+    padding: 0 16px 60px;
+  }
+  
+  .product-card .img-wrap {
+    min-height: 420px;
+  }
+  
+  .product-card .name {
+    font-size: 15px;
+  }
+  
+  .product-card .price {
+    font-size: 16px;
+  }
 }
 
 /* ---------- Product modal ---------- */
@@ -598,7 +617,7 @@ footer {
   text-align: center;
 }
 
-/* ---------- Trust bar (Phase 3) ---------- */
+/* ---------- Trust bar ---------- */
 .trust-bar {
   list-style: none;
   display: flex;
@@ -629,7 +648,7 @@ footer {
 .icon-btn.active { background: var(--rani); border-color: var(--rani); color: var(--canvas); }
 .icon-btn .cart-count { position: static; background: none; color: inherit; width: auto; height: auto; margin-left: 2px; }
 
-/* ---------- Toolbar (search / filters / sort) ---------- */
+/* ---------- Toolbar ---------- */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -655,22 +674,30 @@ footer {
 /* ---------- Wishlist heart on product cards ---------- */
 .heart-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
   z-index: 3;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: 50%;
-  background: rgba(251, 241, 228, 0.85);
+  background: rgba(251, 241, 228, 0.9);
   color: var(--ink);
-  font-size: 14px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
 }
-.heart-btn.active { background: var(--rani); color: var(--canvas); }
+.heart-btn:hover { 
+  transform: scale(1.1);
+  background: rgba(251, 241, 228, 0.95);
+}
+.heart-btn.active { 
+  background: var(--rani); 
+  color: var(--canvas); 
+}
 
 /* ---------- Star ratings ---------- */
 .stars {
@@ -697,7 +724,7 @@ footer {
 .thumb img { width: 100%; height: 100%; object-fit: cover; }
 .thumb.active { border-color: var(--jaipuri); border-width: 2px; }
 
-/* ---------- Variant selectors (size / color / qty) ---------- */
+/* ---------- Variant selectors ---------- */
 .variant-row { margin-bottom: 18px; }
 .variant-label {
   font-family: var(--font-label);
@@ -795,27 +822,29 @@ footer {
   .related-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ---------- Mobile-first pass (Phase 2, Sep 1) ---------- */
+/* ---------- Mobile Optimizations ---------- */
 @media (max-width: 600px) {
   .site-header { padding: 14px 16px; }
   .brand-name { font-size: 20px; }
   .cart-btn { padding: 9px 14px; font-size: 12px; }
   .hero { padding: 40px 16px 28px; }
   .toolbar { padding: 16px 16px 0; }
-  .panel-grid { padding: 0 16px 60px; gap: 12px; grid-auto-rows: 460px; }
   .modal-body { padding: 20px; }
   .checkout-form { padding: 18px; }
   .trust-bar { padding: 0 16px 24px; gap: 8px 16px; font-size: 11px; }
   .footer-trust { padding: 16px; gap: 12px; }
   .footer-base { padding: 14px 16px 32px; }
-  /* iOS Safari auto-zooms any focused input/select under 16px font-size */
   .search-input, .select, .checkout-form input, .checkout-form select { font-size: 16px; }
   .select { max-width: 140px; }
   .search-input { min-width: 100%; flex-basis: 100%; }
-}
-
-@media (max-width: 420px) {
-  .panel-grid { grid-template-columns: 1fr; grid-auto-rows: 400px; }
+  
+  .product-card .name {
+    font-size: 14px;
+  }
+  
+  .product-card .price {
+    font-size: 15px;
+  }
 }
 
 /* ---------- Reviews ---------- */
