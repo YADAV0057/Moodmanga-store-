@@ -1,25 +1,34 @@
 /* ============================================================
-   Mood Store — design tokens (apparel)
-   Palette: soot ink, warm linen canvas, muted dye-indigo,
-            thread-rust used sparingly for tags/badges/CTAs.
-   Type: editorial serif display + humanist body + mono for
-         prices and labels (garment-tag feel).
+   Mood Store — design tokens (Rajasthan identity, v2)
+   Palette: desert ivory canvas, henna-ink text, Jaipur pink
+            (primary CTA), Jodhpur blue (links/secondary),
+            royal maroon (premium/bestseller), Jaisalmer gold
+            (accents) — abstracted Rajasthan references, kept
+            restrained/premium rather than costume-literal.
+   Type: Fraunces italic display + Inter body/UI. Space Mono
+         dropped — mono read as "tech," not fashion; replaced
+         with tracked small-caps-style Inter for tags/labels.
+   Motif: jharokha (haveli/fort arched window) used sparingly
+          on featured cards and section dividers.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --ink: #18140f;
-  --canvas: #f2ecdc;
-  --canvas-dim: #e8ddc3;
-  --indigo: #4a3f72;
-  --indigo-soft: #8a7cb8;
-  --thread: #a83f2d;
-  --line: rgba(24, 20, 15, 0.14);
+  --ink: #2b1b12;
+  --canvas: #fbf1e4;
+  --canvas-dim: #f3e3cb;
+  --rani: #c93f6e;
+  --haveli: #7a1f2b;
+  --dune: #d9a857;
+  --dune-soft: #e8c68c;
+  --jaipuri: #1b5468;
+  --jaipuri-soft: #4d8296;
+  --line: rgba(43, 27, 18, 0.14);
 
   --font-display: 'Fraunces', serif;
   --font-body: 'Inter', sans-serif;
-  --font-mono: 'Space Mono', monospace;
+  --font-label: 'Inter', sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -46,19 +55,40 @@ img { max-width: 100%; display: block; }
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {
-  outline: 2px solid var(--indigo);
+  outline: 2px solid var(--jaipuri);
   outline-offset: 2px;
 }
 
-/* ---------- Stitched-seam divider (signature texture) ----------
-   A running stitch — echoes a garment seam rather than a page rule. */
+/* ---------- Jharokha divider (signature motif) ----------
+   A repeating row of small arched-window silhouettes — echoes the
+   haveli/fort balcony window used sparingly across the site as the
+   one shape that carries the "forts & temples" identity, replacing
+   the old plain stitch-seam rule. */
 .stitch-divider {
-  height: 16px;
-  background:
-    radial-gradient(circle at center, var(--ink) 1.6px, transparent 1.7px) repeat-x,
-    linear-gradient(var(--line), var(--line)) no-repeat center / 100% 1px;
-  background-size: 16px 16px, 100% 1px;
-  background-position: 8px center, center;
+  height: 18px;
+  background-image:
+    radial-gradient(ellipse 6px 9px at 50% 100%, transparent 98%, var(--dune) 100%),
+    linear-gradient(var(--line), var(--line));
+  background-repeat: repeat-x, no-repeat;
+  background-size: 24px 18px, 100% 1px;
+  background-position: center bottom, center;
+  opacity: 0.9;
+}
+
+/* Jharokha arch accent on featured/premium cards — one small arch
+   at the top edge, not a full ornamental border. */
+.product-card.featured::before,
+.related-strip .featured::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 14px;
+  background: var(--dune);
+  border-radius: 13px 13px 0 0;
+  z-index: 2;
 }
 
 /* ---------- Header ---------- */
@@ -89,12 +119,12 @@ input:focus-visible {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--indigo);
+  background: var(--rani);
   color: var(--canvas);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 13px;
   font-weight: 700;
   transform: rotate(-8deg);
@@ -103,14 +133,14 @@ input:focus-visible {
 
 /* ---------- Wordmark ----------
    The name is short, so it carries the brand alone: an italic display
-   serif with a warm indigo-to-thread gradient fill (rather than flat
+   serif with a warm jaipuri-to-rani gradient fill (rather than flat
    ink) gives it some life, and a light lift on hover keeps it feeling
    like an interactive mark rather than static label text. */
 .brand-name {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 600;
-  background: linear-gradient(100deg, var(--indigo) 0%, var(--thread) 100%);
+  background: linear-gradient(100deg, var(--jaipuri) 0%, var(--rani) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -128,7 +158,7 @@ input:focus-visible {
   color: var(--canvas);
   border: none;
   padding: 10px 18px;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-weight: 500;
   font-size: 13px;
   cursor: pointer;
@@ -139,7 +169,7 @@ input:focus-visible {
   position: absolute;
   top: -8px;
   right: -8px;
-  background: var(--thread);
+  background: var(--rani);
   color: var(--canvas);
   border-radius: 50%;
   width: 20px;
@@ -148,7 +178,7 @@ input:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
 }
 
 /* ---------- Hero ---------- */
@@ -158,9 +188,9 @@ input:focus-visible {
 }
 
 .hero .eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 12px;
-  color: var(--indigo);
+  color: var(--jaipuri);
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 14px;
@@ -179,7 +209,7 @@ input:focus-visible {
 .hero p {
   font-size: 16px;
   max-width: 46ch;
-  color: rgba(24, 20, 15, 0.72);
+  color: rgba(43, 27, 18, 0.72);
 }
 
 /* ---------- Panel grid (garment rack layout) ----------
@@ -238,12 +268,12 @@ input:focus-visible {
 
 .product-card .img-wrap {
   flex: 1;
-  background: linear-gradient(160deg, var(--indigo-soft), var(--indigo));
+  background: linear-gradient(160deg, var(--dune-soft), var(--haveli));
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--canvas);
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 12px;
   letter-spacing: 1px;
   overflow: hidden;
@@ -259,9 +289,9 @@ input:focus-visible {
   display: flex;
   align-items: center;
   gap: 5px;
-  background: var(--thread);
+  background: var(--haveli);
   color: var(--canvas);
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 10px;
   padding: 3px 8px 3px 6px;
   transform: rotate(-4deg);
@@ -289,9 +319,9 @@ input:focus-visible {
 }
 
 .product-card .price {
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 13px;
-  color: var(--indigo);
+  color: var(--jaipuri);
 }
 
 @media (max-width: 900px) {
@@ -302,7 +332,7 @@ input:focus-visible {
 /* ---------- Product modal ---------- */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(24, 20, 15, 0.6);
+  background: rgba(43, 27, 18, 0.6);
   display: none;
   align-items: center; justify-content: center;
   z-index: 100;
@@ -334,18 +364,18 @@ input:focus-visible {
 .modal-body { padding: 32px; }
 .modal-body .img-wrap {
   height: 340px;
-  background: linear-gradient(160deg, var(--indigo-soft), var(--indigo));
+  background: linear-gradient(160deg, var(--dune-soft), var(--haveli));
   display: flex; align-items: center; justify-content: center;
   color: var(--canvas); margin-bottom: 20px;
-  font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px;
+  font-family: var(--font-label); font-size: 12px; letter-spacing: 1px;
 }
 .modal-body h2 { font-family: var(--font-display); font-weight: 600; font-style: italic; font-size: 28px; margin: 0 0 8px; }
-.modal-body .price { font-family: var(--font-mono); font-size: 20px; color: var(--indigo); margin-bottom: 16px; }
-.modal-body .desc { color: rgba(24, 20, 15, 0.72); margin-bottom: 24px; }
+.modal-body .price { font-family: var(--font-label); font-size: 20px; color: var(--jaipuri); margin-bottom: 16px; }
+.modal-body .desc { color: rgba(43, 27, 18, 0.72); margin-bottom: 24px; }
 
 /* ---------- Buttons ---------- */
 .btn {
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-weight: 600;
   font-size: 13px;
   letter-spacing: 0.5px;
@@ -353,7 +383,7 @@ input:focus-visible {
   border: none;
   cursor: pointer;
 }
-.btn-primary { background: var(--thread); color: var(--canvas); }
+.btn-primary { background: var(--rani); color: var(--canvas); }
 .btn-dark { background: var(--ink); color: var(--canvas); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -383,16 +413,16 @@ input:focus-visible {
   padding: 12px 0; border-bottom: 1px solid var(--line);
   font-size: 14px;
 }
-.cart-item .qty-controls { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); }
+.cart-item .qty-controls { display: flex; align-items: center; gap: 8px; font-family: var(--font-label); }
 .cart-item .qty-controls button {
   width: 22px; height: 22px; border: 1px solid var(--ink); background: none; cursor: pointer;
 }
 
 .cart-footer { padding: 20px 24px; border-top: 1px solid var(--line); }
-.cart-total { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 16px; margin-bottom: 16px; }
+.cart-total { display: flex; justify-content: space-between; font-family: var(--font-label); font-size: 16px; margin-bottom: 16px; }
 
 .overlay-backdrop {
-  position: fixed; inset: 0; background: rgba(24, 20, 15, 0.4);
+  position: fixed; inset: 0; background: rgba(43, 27, 18, 0.4);
   display: none; z-index: 80;
 }
 .overlay-backdrop.open { display: block; }
@@ -406,17 +436,17 @@ input:focus-visible {
   background: var(--canvas-dim);
   font-size: 14px;
 }
-.checkout-form label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(24, 20, 15, 0.6); margin-bottom: -8px; }
+.checkout-form label { font-family: var(--font-label); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(43, 27, 18, 0.6); margin-bottom: -8px; }
 
 .empty-state {
-  text-align: center; padding: 60px 20px; color: rgba(24, 20, 15, 0.5); font-family: var(--font-mono); font-size: 13px;
+  text-align: center; padding: 60px 20px; color: rgba(43, 27, 18, 0.5); font-family: var(--font-label); font-size: 13px;
 }
 
 footer {
   padding: 40px 28px;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 12px;
-  color: rgba(24, 20, 15, 0.55);
+  color: rgba(43, 27, 18, 0.55);
   border-top: 1px solid var(--line);
 }
 
@@ -426,12 +456,12 @@ footer {
   border: 1px solid var(--line);
   color: var(--ink);
   padding: 9px 14px;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 13px;
   cursor: pointer;
   position: relative;
 }
-.icon-btn.active { background: var(--thread); border-color: var(--thread); color: var(--canvas); }
+.icon-btn.active { background: var(--rani); border-color: var(--rani); color: var(--canvas); }
 .icon-btn .cart-count { position: static; background: none; color: inherit; width: auto; height: auto; margin-left: 2px; }
 
 /* ---------- Toolbar (search / filters / sort) ---------- */
@@ -453,7 +483,7 @@ footer {
 }
 
 .search-input { flex: 1 1 200px; min-width: 160px; }
-.select { font-family: var(--font-mono); cursor: pointer; }
+.select { font-family: var(--font-label); cursor: pointer; }
 
 /* ---------- Wishlist heart on product cards ---------- */
 .heart-btn {
@@ -465,7 +495,7 @@ footer {
   height: 28px;
   border: none;
   border-radius: 50%;
-  background: rgba(242, 236, 220, 0.85);
+  background: rgba(251, 241, 228, 0.85);
   color: var(--ink);
   font-size: 14px;
   cursor: pointer;
@@ -473,17 +503,17 @@ footer {
   align-items: center;
   justify-content: center;
 }
-.heart-btn.active { background: var(--thread); color: var(--canvas); }
+.heart-btn.active { background: var(--rani); color: var(--canvas); }
 
 /* ---------- Star ratings ---------- */
 .stars {
   font-size: 12px;
-  color: var(--thread);
+  color: var(--dune);
   letter-spacing: 1px;
   margin-top: 4px;
 }
-.stars-count { font-family: var(--font-mono); color: rgba(24, 20, 15, 0.5); letter-spacing: 0; margin-left: 2px; }
-.stars-empty { font-family: var(--font-mono); font-size: 12px; color: rgba(24, 20, 15, 0.45); letter-spacing: 0; margin-bottom: 16px; }
+.stars-count { font-family: var(--font-label); color: rgba(43, 27, 18, 0.5); letter-spacing: 0; margin-left: 2px; }
+.stars-empty { font-family: var(--font-label); font-size: 12px; color: rgba(43, 27, 18, 0.45); letter-spacing: 0; margin-bottom: 16px; }
 
 /* ---------- Product modal: gallery ---------- */
 .gallery-main { height: 340px; margin-bottom: 10px; overflow: hidden; background: var(--canvas-dim); }
@@ -498,16 +528,16 @@ footer {
   overflow: hidden;
 }
 .thumb img { width: 100%; height: 100%; object-fit: cover; }
-.thumb.active { border-color: var(--indigo); border-width: 2px; }
+.thumb.active { border-color: var(--jaipuri); border-width: 2px; }
 
 /* ---------- Variant selectors (size / color / qty) ---------- */
 .variant-row { margin-bottom: 18px; }
 .variant-label {
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: rgba(24, 20, 15, 0.6);
+  color: rgba(43, 27, 18, 0.6);
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -520,7 +550,7 @@ footer {
   padding: 8px 10px;
   border: 1px solid var(--line);
   background: var(--canvas-dim);
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 13px;
   cursor: pointer;
 }
@@ -539,8 +569,8 @@ footer {
 .size-guide-link {
   background: none;
   border: none;
-  color: var(--indigo);
-  font-family: var(--font-mono);
+  color: var(--jaipuri);
+  font-family: var(--font-label);
   font-size: 11px;
   text-decoration: underline;
   cursor: pointer;
@@ -553,7 +583,7 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
 }
 .qty-stepper button {
   width: 30px; height: 30px;
@@ -568,7 +598,7 @@ footer {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
   font-size: 13px;
 }
 .size-guide-table th,
@@ -578,7 +608,7 @@ footer {
   text-align: left;
 }
 .size-guide-table th { background: var(--canvas-dim); }
-.size-guide-note { color: rgba(24, 20, 15, 0.6); font-size: 13px; }
+.size-guide-note { color: rgba(43, 27, 18, 0.6); font-size: 13px; }
 
 /* ---------- Related products ---------- */
 .related-strip { margin: 28px 0; }
@@ -586,13 +616,13 @@ footer {
 .related-card { cursor: pointer; display: block; text-decoration: none; color: inherit; }
 .related-card .img-wrap {
   height: 110px;
-  background: linear-gradient(160deg, var(--indigo-soft), var(--indigo));
+  background: linear-gradient(160deg, var(--dune-soft), var(--haveli));
   display: flex; align-items: center; justify-content: center;
-  color: var(--canvas); font-family: var(--font-mono); font-size: 10px; margin-bottom: 6px;
+  color: var(--canvas); font-family: var(--font-label); font-size: 10px; margin-bottom: 6px;
 }
 .related-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .related-card .name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
-.related-card .price { font-family: var(--font-mono); font-size: 12px; color: var(--indigo); }
+.related-card .price { font-family: var(--font-label); font-size: 12px; color: var(--jaipuri); }
 
 @media (max-width: 600px) {
   .related-grid { grid-template-columns: repeat(2, 1fr); }
@@ -604,8 +634,8 @@ footer {
 .reviews-list { margin-bottom: 24px; display: flex; flex-direction: column; gap: 14px; }
 .review { border-bottom: 1px solid var(--line); padding-bottom: 14px; }
 .review-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.review-name { font-family: var(--font-mono); font-size: 12px; color: rgba(24, 20, 15, 0.6); }
-.review-comment { font-size: 14px; color: rgba(24, 20, 15, 0.85); }
+.review-name { font-family: var(--font-label); font-size: 12px; color: rgba(43, 27, 18, 0.6); }
+.review-comment { font-size: 14px; color: rgba(43, 27, 18, 0.85); }
 
 .review-form { display: flex; flex-direction: column; gap: 10px; }
 .review-form input,
@@ -619,7 +649,7 @@ footer {
 }
 
 /* ---------- Cart item variant label ---------- */
-.cart-item-variant { color: rgba(24, 20, 15, 0.55); font-size: 12px; }
+.cart-item-variant { color: rgba(43, 27, 18, 0.55); font-size: 12px; }
 
 
 
