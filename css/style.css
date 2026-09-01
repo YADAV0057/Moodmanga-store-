@@ -722,27 +722,4 @@ footer {
 
 /* ---------- Reviews ---------- */
 .reviews-section { border-top: 1px solid var(--line); padding-top: 20px; }
-.reviews-section h3 { font-family: var(--font-display); font-weight: 600; font-style: italic; font-size: 20px; margin: 0 0 14px; }
-.reviews-list { margin-bottom: 24px; display: flex; flex-direction: column; gap: 14px; }
-.review { border-bottom: 1px solid var(--line); padding-bottom: 14px; }
-.review-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.review-name { font-family: var(--font-label); font-size: 12px; color: rgba(43, 27, 18, 0.6); }
-.review-comment { font-size: 14px; color: rgba(43, 27, 18, 0.85); }
-
-.review-form { display: flex; flex-direction: column; gap: 10px; }
-.review-form input,
-.review-form select,
-.review-form textarea {
-  font-family: var(--font-body);
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  background: var(--canvas-dim);
-  font-size: 14px;
-}
-
-/* ---------- Cart item variant label ---------- */
-.cart-item-variant { color: rgba(43, 27, 18, 0.55); font-size: 12px; }
-
-
-
-
+.reviews-section h3 { font-family
