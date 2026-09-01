@@ -3,7 +3,7 @@
    Palette: desert ivory canvas, henna-ink text, Jaipur pink
             (primary CTA), Jodhpur blue (links/secondary),
             royal maroon (premium/bestseller), Jaisalmer gold
-            (accents) — abstracted Rajasthan references, kept 
+            (accents) — abstracted Rajasthan references, kept
             restrained/premium rather than costume-literal.
    Type: Fraunces italic display + Inter body/UI. Space Mono
          dropped — mono read as "tech," not fashion; replaced
@@ -668,6 +668,10 @@ footer {
   .trust-bar { padding: 0 16px 24px; gap: 8px 16px; font-size: 11px; }
   .footer-trust { padding: 16px; gap: 12px; }
   .footer-base { padding: 14px 16px 32px; }
+  /* iOS Safari auto-zooms any focused input/select under 16px font-size */
+  .search-input, .select, .checkout-form input { font-size: 16px; }
+  .select { max-width: 140px; }
+  .search-input { min-width: 100%; flex-basis: 100%; }
 }
 
 @media (max-width: 420px) {
