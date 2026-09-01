@@ -180,14 +180,50 @@ input:focus-visible {
 
 /* ---------- Hero ---------- */
 .hero {
-  padding: 64px 28px 40px;
-  max-width: 720px;
+  position: relative;
+  padding: 96px 28px 72px;
+  max-width: none;
+  overflow: hidden;
+  color: var(--canvas);
+  isolation: isolate;
 }
+
+/* Rotating background: stack of full-bleed slides, crossfaded via JS
+   toggling .active. Swap each background-image URL for a real, licensed
+   photo (Unsplash/Pexels are free for commercial use, or your own
+   photography) — see the HTML comment above .hero-bg for the theme list. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+.hero-bg-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.8s ease;
+  filter: blur(6px);
+  transform: scale(1.06); /* hides the soft edge the blur creates */
+}
+.hero-bg-slide.active { opacity: 1; }
+
+/* Scrim so text stays readable over any photo, in the brand's ink tone
+   rather than plain black, to stay on-palette. */
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(43,27,18,0.35) 0%, rgba(43,27,18,0.6) 55%, rgba(43,27,18,0.8) 100%);
+}
+
+.hero .content-wrap { max-width: 720px; }
 
 .hero .eyebrow {
   font-family: var(--font-label);
   font-size: 12px;
-  color: var(--jaipuri);
+  color: var(--dune);
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 14px;
@@ -201,12 +237,18 @@ input:focus-visible {
   line-height: 0.98;
   margin: 0 0 18px;
   letter-spacing: 0.2px;
+  color: var(--canvas);
+  text-shadow: 0 2px 20px rgba(43,27,18,0.4);
 }
 
 .hero p {
   font-size: 16px;
   max-width: 46ch;
-  color: rgba(43, 27, 18, 0.72);
+  color: rgba(251, 241, 228, 0.88);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg-slide { transition: opacity 0.3s ease; }
 }
 
 /* ---------- Panel grid (garment rack layout) ----------
