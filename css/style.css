@@ -49,23 +49,49 @@ body::before {
   background-position: center;
   background-attachment: fixed;
   opacity: 0.4;
-  animation: slideBg 36s infinite ease-in-out;
+  animation: slideBg 65s infinite ease-in-out;
 }
 
 @keyframes slideBg {
-  0% { background-image: url('../images/hero/hero-amber-fort.jpg'); }
-  14% { background-image: url('../images/hero/hero-amber-fort.jpg'); }
-  16% { background-image: url('../images/hero/hero-palace-archway.jpg'); opacity: 0; }
-  30% { background-image: url('../images/hero/hero-palace-archway.jpg'); opacity: 0.4; }
-  32% { background-image: url('../images/hero/hero-palace-archway.jpg'); }
-  46% { background-image: url('../images/hero/hero-palace-archway.jpg'); }
-  48% { background-image: url('../images/hero/hero-thar-desert.jpg'); opacity: 0; }
-  62% { background-image: url('../images/hero/hero-thar-desert.jpg'); opacity: 0.4; }
-  64% { background-image: url('../images/hero/hero-thar-desert.jpg'); }
-  78% { background-image: url('../images/hero/hero-thar-desert.jpg'); }
-  80% { background-image: url('../images/hero/hero-amber-fort.jpg'); opacity: 0; }
-  94% { background-image: url('../images/hero/hero-amber-fort.jpg'); opacity: 0.4; }
-  100% { background-image: url('../images/hero/hero-amber-fort.jpg'); }
+  0% { background-image: url('../images/hero/hero-amber-fort.jpg'); opacity: 0.4; }
+  6.49% { background-image: url('../images/hero/hero-amber-fort.jpg'); opacity: 0.4; }
+  7.69% { background-image: url('../images/hero/hero-palace-archway.jpg'); opacity: 0; }
+  8.89% { background-image: url('../images/hero/hero-palace-archway.jpg'); opacity: 0.4; }
+  14.18% { background-image: url('../images/hero/hero-palace-archway.jpg'); opacity: 0.4; }
+  15.38% { background-image: url('../images/hero/hero-thar-desert.jpg'); opacity: 0; }
+  16.58% { background-image: url('../images/hero/hero-thar-desert.jpg'); opacity: 0.4; }
+  21.88% { background-image: url('../images/hero/hero-thar-desert.jpg'); opacity: 0.4; }
+  23.08% { background-image: url('../images/hero/hero-hawa-mahal.jpg'); opacity: 0; }
+  24.28% { background-image: url('../images/hero/hero-hawa-mahal.jpg'); opacity: 0.4; }
+  29.57% { background-image: url('../images/hero/hero-hawa-mahal.jpg'); opacity: 0.4; }
+  30.77% { background-image: url('../images/hero/hero-jaisalmer-fort.jpg'); opacity: 0; }
+  31.97% { background-image: url('../images/hero/hero-jaisalmer-fort.jpg'); opacity: 0.4; }
+  37.26% { background-image: url('../images/hero/hero-jaisalmer-fort.jpg'); opacity: 0.4; }
+  38.46% { background-image: url('../images/hero/hero-desert-camel.jpg'); opacity: 0; }
+  39.66% { background-image: url('../images/hero/hero-desert-camel.jpg'); opacity: 0.4; }
+  44.95% { background-image: url('../images/hero/hero-desert-camel.jpg'); opacity: 0.4; }
+  46.15% { background-image: url('../images/hero/hero-bawadi.jpg'); opacity: 0; }
+  47.35% { background-image: url('../images/hero/hero-bawadi.jpg'); opacity: 0.4; }
+  52.65% { background-image: url('../images/hero/hero-bawadi.jpg'); opacity: 0.4; }
+  53.85% { background-image: url('../images/hero/hero-dance.jpg'); opacity: 0; }
+  55.05% { background-image: url('../images/hero/hero-dance.jpg'); opacity: 0.4; }
+  60.34% { background-image: url('../images/hero/hero-dance.jpg'); opacity: 0.4; }
+  61.54% { background-image: url('../images/hero/hero-fort-night.jpg'); opacity: 0; }
+  62.74% { background-image: url('../images/hero/hero-fort-night.jpg'); opacity: 0.4; }
+  68.03% { background-image: url('../images/hero/hero-fort-night.jpg'); opacity: 0.4; }
+  69.23% { background-image: url('../images/hero/hero-fort-street.jpg'); opacity: 0; }
+  70.43% { background-image: url('../images/hero/hero-fort-street.jpg'); opacity: 0.4; }
+  75.72% { background-image: url('../images/hero/hero-fort-street.jpg'); opacity: 0.4; }
+  76.92% { background-image: url('../images/hero/hero-statue.jpg'); opacity: 0; }
+  78.12% { background-image: url('../images/hero/hero-statue.jpg'); opacity: 0.4; }
+  83.42% { background-image: url('../images/hero/hero-statue.jpg'); opacity: 0.4; }
+  84.62% { background-image: url('../images/hero/hero-udaipur-palace.jpg'); opacity: 0; }
+  85.82% { background-image: url('../images/hero/hero-udaipur-palace.jpg'); opacity: 0.4; }
+  91.11% { background-image: url('../images/hero/hero-udaipur-palace.jpg'); opacity: 0.4; }
+  92.31% { background-image: url('../images/hero/hero-Rajasthan-fort.jpg'); opacity: 0; }
+  93.51% { background-image: url('../images/hero/hero-Rajasthan-fort.jpg'); opacity: 0.4; }
+  98.8% { background-image: url('../images/hero/hero-Rajasthan-fort.jpg'); opacity: 0.4; }
+  100% { background-image: url('../images/hero/hero-amber-fort.jpg'); opacity: 0.4; }
 }
 
 /* Content overlay scrim for readability */
