@@ -48,7 +48,7 @@ body::before {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  opacity: 0.12;
+  opacity: 0.4;
   animation: slideBg 36s infinite ease-in-out;
 }
 
@@ -56,15 +56,15 @@ body::before {
   0% { background-image: url('hero-amber-fort.jpg'); }
   14% { background-image: url('hero-amber-fort.jpg'); }
   16% { background-image: url('hero-palace-archway.jpg'); opacity: 0; }
-  30% { background-image: url('hero-palace-archway.jpg'); opacity: 0.12; }
+  30% { background-image: url('hero-palace-archway.jpg'); opacity: 0.4; }
   32% { background-image: url('hero-palace-archway.jpg'); }
   46% { background-image: url('hero-palace-archway.jpg'); }
   48% { background-image: url('hero-thar-desert.jpg'); opacity: 0; }
-  62% { background-image: url('hero-thar-desert.jpg'); opacity: 0.12; }
+  62% { background-image: url('hero-thar-desert.jpg'); opacity: 0.4; }
   64% { background-image: url('hero-thar-desert.jpg'); }
   78% { background-image: url('hero-thar-desert.jpg'); }
   80% { background-image: url('hero-amber-fort.jpg'); opacity: 0; }
-  94% { background-image: url('hero-amber-fort.jpg'); opacity: 0.12; }
+  94% { background-image: url('hero-amber-fort.jpg'); opacity: 0.4; }
   100% { background-image: url('hero-amber-fort.jpg'); }
 }
 
