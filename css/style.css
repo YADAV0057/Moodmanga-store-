@@ -53,19 +53,19 @@ body::before {
 }
 
 @keyframes slideBg {
-  0% { background-image: url('hero-amber-fort.jpg'); }
-  14% { background-image: url('hero-amber-fort.jpg'); }
-  16% { background-image: url('hero-palace-archway.jpg'); opacity: 0; }
-  30% { background-image: url('hero-palace-archway.jpg'); opacity: 0.4; }
-  32% { background-image: url('hero-palace-archway.jpg'); }
-  46% { background-image: url('hero-palace-archway.jpg'); }
-  48% { background-image: url('hero-thar-desert.jpg'); opacity: 0; }
-  62% { background-image: url('hero-thar-desert.jpg'); opacity: 0.4; }
-  64% { background-image: url('hero-thar-desert.jpg'); }
-  78% { background-image: url('hero-thar-desert.jpg'); }
-  80% { background-image: url('hero-amber-fort.jpg'); opacity: 0; }
-  94% { background-image: url('hero-amber-fort.jpg'); opacity: 0.4; }
-  100% { background-image: url('hero-amber-fort.jpg'); }
+  0% { background-image: url('../images/hero/hero-amber-fort.jpg'); }
+  14% { background-image: url('../images/hero/hero-amber-fort.jpg'); }
+  16% { background-image: url('../images/hero/hero-palace-archway.jpg'); opacity: 0; }
+  30% { background-image: url('../images/hero/hero-palace-archway.jpg'); opacity: 0.4; }
+  32% { background-image: url('../images/hero/hero-palace-archway.jpg'); }
+  46% { background-image: url('../images/hero/hero-palace-archway.jpg'); }
+  48% { background-image: url('../images/hero/hero-thar-desert.jpg'); opacity: 0; }
+  62% { background-image: url('../images/hero/hero-thar-desert.jpg'); opacity: 0.4; }
+  64% { background-image: url('../images/hero/hero-thar-desert.jpg'); }
+  78% { background-image: url('../images/hero/hero-thar-desert.jpg'); }
+  80% { background-image: url('../images/hero/hero-amber-fort.jpg'); opacity: 0; }
+  94% { background-image: url('../images/hero/hero-amber-fort.jpg'); opacity: 0.4; }
+  100% { background-image: url('../images/hero/hero-amber-fort.jpg'); }
 }
 
 /* Content overlay scrim for readability */
