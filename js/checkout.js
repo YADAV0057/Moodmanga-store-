@@ -89,7 +89,7 @@ document.getElementById("confirmAddressBtn").addEventListener("click", async () 
 
   // Allow payment to proceed
   document.getElementById("payBtn").disabled = false;
-};
+});
 
 // Auto-format phone number input
 document.querySelector("input[name='phone']")?.addEventListener("input", (e) => {
