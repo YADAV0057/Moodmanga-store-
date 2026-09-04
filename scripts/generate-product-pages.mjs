@@ -252,31 +252,49 @@ ${images[0] ? `<meta property="og:image" content="${escapeHtml(images[0])}">` : 
   <button type="button" id="checkoutBtn" class="btn btn-primary" style="width:100%;margin-top:14px;">GO TO CHECKOUT</button>
 </aside>
 
-<!-- Checkout modal — was missing from this template, which is why Bag
-     had no working checkout and Buy Now silently failed on product
-     pages (checkout.js wasn't loaded either; see script tags below). -->
+<!-- Checkout modal — must stay in sync with index.html's checkout form.
+     It previously lacked the #confirmAddressBtn / #addressConfirmed
+     elements that checkout.js binds at load time; since that binding
+     wasn't optional-chained, the missing elements threw and aborted the
+     rest of checkout.js's setup — including the #checkoutForm submit
+     handler that actually starts payment. That's why Buy Now looked
+     like it silently failed on every product page. -->
 <div class="modal-overlay" id="checkoutModal">
   <div class="modal">
     <button class="modal-close" id="closeCheckout">×</button>
     <div class="modal-body">
       <h2>Checkout</h2>
       <form class="checkout-form" id="checkoutForm">
-        <label>Full name</label>
-        <input type="text" name="name" required />
-        <label>Email</label>
-        <input type="email" name="email" required />
-        <label>Phone</label>
-        <input type="tel" name="phone" required />
-        <label>Address line</label>
-        <input type="text" name="line1" required />
-        <label>City</label>
-        <input type="text" name="city" required />
-        <label>State</label>
-        <input type="text" name="state" required />
-        <label>Pincode</label>
-        <input type="text" name="pincode" required />
-        <div class="cart-total"><span>Total</span><span id="checkoutTotal">₹0</span></div>
-        <button type="submit" class="btn btn-dark" id="payBtn">PAY WITH CASHFREE</button>
+
+        <div class="checkout-section">
+          <h3>Personal Information</h3>
+          <label>Full name *</label>
+          <input type="text" name="name" required />
+          <label>Email *</label>
+          <input type="email" name="email" required />
+          <label>Phone number (10 digits) *</label>
+          <input type="tel" name="phone" placeholder="9876543210" maxlength="10" required />
+        </div>
+
+        <div class="checkout-section">
+          <h3>Shipping Address</h3>
+          <label>Address line 1 *</label>
+          <input type="text" name="line1" required />
+          <label>City *</label>
+          <input type="text" name="city" required />
+          <label>State *</label>
+          <input type="text" name="state" required />
+          <label>Pincode (6 digits) *</label>
+          <input type="text" name="pincode" placeholder="123456" maxlength="6" required />
+
+          <button type="button" class="address-confirm-btn" id="confirmAddressBtn">✓ CONFIRM ADDRESS</button>
+          <div id="addressConfirmed" class="address-confirm" style="display:none;"></div>
+        </div>
+
+        <div class="checkout-section">
+          <div class="cart-total"><span>Order Total</span><span id="checkoutTotal">₹0</span></div>
+          <button type="submit" class="btn btn-dark" id="payBtn" disabled>PAY WITH CASHFREE</button>
+        </div>
       </form>
     </div>
   </div>
