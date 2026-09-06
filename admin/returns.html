@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Returns — MoodManga Store Admin</title>
+<link rel="stylesheet" href="css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="admin-topbar">
+  <a href="dashboard.html" class="admin-logo">MoodManga Store Admin</a>
+  <nav class="admin-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="products.html">Products</a>
+    <a href="import.html">Import</a>
+    <a href="orders.html">Orders</a>
+    <a href="returns.html" class="active">Returns</a>
+    <a href="customers.html">Customers</a>
+    <a href="settings.html">Settings</a>
+    <button id="logoutBtn" class="admin-nav-logout" onclick="handleLogout()">Sign out</button>
+  </nav>
+</header>
+
+<main class="admin-main">
+  <div class="admin-page-header">
+    <h1>Return requests</h1>
+  </div>
+
+  <div class="admin-toolbar">
+    <select id="statusFilter">
+      <option value="">All statuses</option>
+      <option value="requested" selected>Requested</option>
+      <option value="approved">Approved</option>
+      <option value="rejected">Rejected</option>
+      <option value="picked_up">Picked up</option>
+      <option value="refunded">Refunded</option>
+    </select>
+  </div>
+
+  <div id="loadingState" class="admin-state">Loading return requests…</div>
+  <div id="errorState" class="admin-state admin-state-error" hidden></div>
+  <div id="emptyState" class="admin-state" hidden>No return requests found.</div>
+
+  <table id="returnsTable" class="admin-table" hidden>
+    <thead>
+      <tr>
+        <th>Order</th>
+        <th>Customer</th>
+        <th>Reason</th>
+        <th>Requested</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="returnsTbody"></tbody>
+  </table>
+</main>
+
+<!-- Return detail modal -->
+<div id="returnModal" class="admin-modal-backdrop" hidden>
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h2>Return request</h2>
+      <button id="closeModal" class="admin-modal-close" onclick="closeReturnModal()">&times;</button>
+    </div>
+
+    <div id="returnDetailBody">
+      <section class="admin-order-section">
+        <p id="detailOrderId"></p>
+        <p id="detailCustomerEmail"></p>
+        <p id="detailReason"></p>
+        <p id="detailNote"></p>
+      </section>
+
+      <section class="admin-order-section">
+        <label>Status
+          <select id="detailStatus">
+            <option value="requested">Requested</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="picked_up">Picked up</option>
+            <option value="refunded">Refunded</option>
+          </select>
+        </label>
+        <label>Admin notes (internal only)<textarea id="detailAdminNotes" rows="3"></textarea></label>
+        <div id="detailError" class="admin-form-error" hidden></div>
+        <div class="admin-modal-actions">
+          <button id="saveReturnBtn" class="btn btn-primary" onclick="handleSaveReturn()">Save changes</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script src="js/admin-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/returns.js"></script>
+</body>
+</html>
