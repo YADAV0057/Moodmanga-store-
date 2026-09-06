@@ -72,3 +72,15 @@ alter table store_orders add column if not exists tracking_number text;
 alter table store_orders add column if not exists tracking_carrier text;
 alter table store_orders add column if not exists admin_notes text;
 
+-- ---------------------------------------------------------------
+-- 6. store_coupons — admin-only read/write
+-- ---------------------------------------------------------------
+-- Coupons are never read by the storefront directly; create-order (service
+-- role) looks them up server-side during checkout. Only the admin panel
+-- needs client-side access, and only for admins.
+create policy "Admins can read coupons" on store_coupons
+  for select using (is_admin());
+
+create policy "Admins can write coupons" on store_coupons
+  for all using (is_admin());
+
