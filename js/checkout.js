@@ -89,7 +89,7 @@ document.getElementById("confirmAddressBtn").addEventListener("click", async () 
 
   // Allow payment to proceed
   document.getElementById("payBtn").disabled = false;
-});
+};
 
 // Auto-format phone number input
 document.querySelector("input[name='phone']")?.addEventListener("input", (e) => {
@@ -187,7 +187,8 @@ document.getElementById("checkoutForm").addEventListener("submit", async (e) => 
       }
       buyNowItem = null;
       document.getElementById("checkoutModal").classList.remove("open");
-      alert("Payment successful! Your order is confirmed. Order ID: " + orderData.cashfree_order_id);
+      window.location.href = "order-status.html?order_id=" + encodeURIComponent(orderData.cashfree_order_id);
+      return;
     } else {
       alert(
         "We couldn't confirm your payment yet. If money was deducted, contact support with this order ID: " +
