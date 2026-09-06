@@ -30,7 +30,29 @@ create table if not exists store_orders (
   shipping_inr numeric(10,2) not null default 0,
   total_inr numeric(10,2) not null,
   created_at timestamptz not null default now(),
-  paid_at timestamptz
+  paid_at timestamptz,
+  tracking_number text,
+  tracking_carrier text,
+  admin_notes text,
+  coupon_code text,
+  discount_inr numeric(10,2) not null default 0,
+  -- ref code from the mst_aff_ref cookie (see js/track.js), set by
+  -- create-order at checkout time. Validated/attributed on the affiliate
+  -- service's side when verify-payment fires the conversion webhook.
+  affiliate_ref text
+);
+
+create table if not exists store_coupons (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  discount_type text not null,       -- 'percent' | 'flat'
+  discount_value numeric(10,2) not null,
+  min_order_inr numeric(10,2) not null default 0,
+  max_uses integer,                  -- null = unlimited
+  uses_count integer not null default 0,
+  active boolean not null default true,
+  expires_at timestamptz,
+  created_at timestamptz not null default now()
 );
 
 create table if not exists store_order_items (
@@ -51,6 +73,7 @@ create index if not exists idx_store_orders_status on store_orders(status);
 alter table store_products enable row level security;
 alter table store_orders enable row level security;
 alter table store_order_items enable row level security;
+alter table store_coupons enable row level security;
 
 create policy "Public can read active products" on store_products
   for select using (is_active = true);
