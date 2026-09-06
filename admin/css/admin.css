@@ -205,6 +205,10 @@ body {
 .admin-status-delivered { background: #d1fae5; color: #065f46; }
 .admin-status-cancelled { background: #fee2e2; color: #991b1b; }
 .admin-status-refunded { background: #fce7f3; color: #9d174d; }
+.admin-status-requested { background: #fef3c7; color: #92400e; }
+.admin-status-approved { background: #d1fae5; color: #065f46; }
+.admin-status-rejected { background: #fee2e2; color: #991b1b; }
+.admin-status-picked_up { background: #e0e7ff; color: #3730a3; }
 
 .admin-order-section { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #eee; }
 .admin-order-section:last-child { border-bottom: none; }
